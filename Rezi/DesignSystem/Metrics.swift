@@ -143,7 +143,7 @@ enum Metrics {
     static let cloudDensity: Int = 3
 
     /// A second, smaller copy drawn behind for parallax.
-    static let cloudFarScale: CGFloat = 0.78
+    static let cloudFarScale: CGFloat = 0.85
     static let cloudFarOpacity: Double = 0.45
 
     /// The cloud dissolves to nothing across this band, so the content below
@@ -156,15 +156,27 @@ enum Metrics {
         (screenWidth - bandWidth) / 2
     }
 
-    /// Drift amplitude, clamped to the overhang the band actually has.
+    /// Fraction of the band at each end where the artwork ramps up from
+    /// transparent rather than holding cloud. Measured off the export: it is
+    /// clean across the middle but fades in over roughly the outer 7%.
+    static let cloudContentInset: CGFloat = 0.08
+
+    /// Safety margin, so the ramp stays comfortably off screen rather than
+    /// stopping exactly at its edge.
+    static let cloudDriftMargin: CGFloat = 12
+
+    /// Drift amplitude, clamped to the overhang the band's *cloud* has —
+    /// not the overhang the image file has.
     ///
-    /// This is load-bearing. Hard-coding the travel let the smaller parallax
-    /// copy slide its own right edge into view — a clean vertical line down
-    /// the screen where the cloud simply stopped. Deriving the amplitude from
-    /// the band means no scale can ever drift itself off screen.
+    /// This is the whole bug: the artwork is wider than the cloud drawn on it.
+    /// Clamping to the file's width let the smaller parallax copy slide its
+    /// soft end into view, and a half-opaque cloud edge crossing the screen
+    /// reads as a sharp vertical line. Measuring from the content instead
+    /// keeps it out of sight at any scale.
     static func cloudDrift(screenWidth: CGFloat, bandWidth: CGFloat) -> CGFloat {
-        let overhang = max(0, (bandWidth - screenWidth) / 2)
-        return min(screenWidth * cloudDriftTravel, overhang)
+        let contentWidth = bandWidth * (1 - 2 * cloudContentInset)
+        let overhang = (contentWidth - screenWidth) / 2 - cloudDriftMargin
+        return min(screenWidth * cloudDriftTravel, max(0, overhang))
     }
 
     /// Top edge of a cloud band, placed so its wisps land on `silhouetteY`.
