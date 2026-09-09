@@ -9,6 +9,10 @@ import SwiftUI
 /// A mesh shifting large areas of similar blue is genuinely hard to perceive —
 /// a travelling highlight gives the eye something to track.
 ///
+/// Tuned for a slow, unhurried drift: the travel is generous — up to a third
+/// of the frame — but the periods are long, so movement is plainly visible
+/// within a couple of seconds without ever pulling focus from the copy.
+///
 /// The control rows are deliberately weighted towards the top of the frame.
 /// Only the upper part of the sky is ever visible: below that the clouds take
 /// over. Spacing the rows evenly put nearly all the movement underneath them,
@@ -75,22 +79,22 @@ struct AnimatedSky: View {
         return [
             // Top edge — y pinned, so it slides sideways only.
             SIMD2<Float>(0, 0),
-            SIMD2<Float>(0.5 + drift(0.62, 0.0, 0.30), 0),
+            SIMD2<Float>(0.5 + drift(0.30, 0.0, 0.30), 0),
             SIMD2<Float>(1, 0),
 
             // High up, where the sky is actually visible.
-            SIMD2<Float>(0, 0.20 + drift(0.55, 1.1, 0.09)),
-            SIMD2<Float>(0.5 + drift(0.78, 2.0, 0.32), 0.20 + drift(0.67, 0.4, 0.11)),
-            SIMD2<Float>(1, 0.20 + drift(0.49, 3.2, 0.09)),
+            SIMD2<Float>(0, 0.20 + drift(0.27, 1.1, 0.09)),
+            SIMD2<Float>(0.5 + drift(0.38, 2.0, 0.32), 0.20 + drift(0.33, 0.4, 0.11)),
+            SIMD2<Float>(1, 0.20 + drift(0.24, 3.2, 0.09)),
 
             // Around the cloud line.
-            SIMD2<Float>(0, 0.52 + drift(0.44, 2.4, 0.11)),
-            SIMD2<Float>(0.5 + drift(0.86, 4.1, 0.32), 0.52 + drift(0.59, 1.7, 0.14)),
-            SIMD2<Float>(1, 0.52 + drift(0.51, 0.9, 0.11)),
+            SIMD2<Float>(0, 0.52 + drift(0.22, 2.4, 0.11)),
+            SIMD2<Float>(0.5 + drift(0.42, 4.1, 0.32), 0.52 + drift(0.29, 1.7, 0.14)),
+            SIMD2<Float>(1, 0.52 + drift(0.25, 0.9, 0.11)),
 
             // Bottom edge — y pinned.
             SIMD2<Float>(0, 1),
-            SIMD2<Float>(0.5 + drift(0.71, 5.0, 0.30), 1),
+            SIMD2<Float>(0.5 + drift(0.35, 5.0, 0.30), 1),
             SIMD2<Float>(1, 1)
         ]
     }
@@ -120,28 +124,28 @@ struct AnimatedSky: View {
             color: ReziColor.skyLightCool,
             originX: 0.70, originY: 0.16,
             spreadX: 0.38, spreadY: 0.16,
-            speedX: 0.42, speedY: 0.58,
+            speedX: 0.21, speedY: 0.29,
             phaseX: 0.0, phaseY: 1.6,
             radius: 0.58,
-            intensity: 0.60
+            intensity: 0.42
         ),
         Light(
             color: ReziColor.skyLightWarm,
             originX: 0.30, originY: 0.44,
             spreadX: 0.42, spreadY: 0.20,
-            speedX: 0.35, speedY: 0.47,
+            speedX: 0.18, speedY: 0.24,
             phaseX: 2.4, phaseY: 0.7,
             radius: 0.62,
-            intensity: 0.50
+            intensity: 0.36
         ),
         Light(
             color: ReziColor.skyLightCool,
             originX: 0.45, originY: 0.30,
             spreadX: 0.34, spreadY: 0.22,
-            speedX: 0.53, speedY: 0.39,
+            speedX: 0.26, speedY: 0.20,
             phaseX: 4.1, phaseY: 3.3,
             radius: 0.46,
-            intensity: 0.42
+            intensity: 0.30
         )
     ]
 

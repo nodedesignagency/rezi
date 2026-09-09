@@ -124,8 +124,13 @@ enum Metrics {
     static let cloudSilhouetteStart: CGFloat = 0.255
 
     /// Where those wisps should land, as a fraction of screen height.
-    static let cloudSilhouetteY: CGFloat = 0.54
-    static let cloudFarSilhouetteY: CGFloat = 0.50
+    ///
+    /// Measured off the Figma render: cloud tops read 43% at the left edge,
+    /// 44% mid-screen, and the sky ends at 43% on the right. The app icon
+    /// sits at 48-57%, so it lands just under the cloud line and reads as the
+    /// divider between the phone above and the copy below.
+    static let cloudSilhouetteY: CGFloat = 0.43
+    static let cloudFarSilhouetteY: CGFloat = 0.39
 
     /// How far the band slides each way, as a fraction of screen width. It is
     /// wide enough that it never runs out at this amplitude, so the drift
@@ -138,8 +143,8 @@ enum Metrics {
 
     /// The cloud dissolves to nothing across this band, so the content below
     /// sits on clean white instead of on cloud texture.
-    static let cloudFadeStart: CGFloat = 0.64
-    static let cloudFadeEnd: CGFloat = 0.80
+    static let cloudFadeStart: CGFloat = 0.56
+    static let cloudFadeEnd: CGFloat = 0.74
 
     /// Top edge of a cloud band, placed so its wisps land on `silhouetteY`.
     static func cloudBandTop(
