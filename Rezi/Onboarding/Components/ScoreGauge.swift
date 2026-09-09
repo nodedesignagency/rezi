@@ -34,6 +34,7 @@ struct ScoreGauge: View {
             Text(label)
                 .font(ReziFont.gaugeLabel)
                 .foregroundStyle(color)
+                .offset(y: Metrics.gaugeLabelOffset)
         }
         .onAppear { sweep(animated: revealed) }
         .onChange(of: revealed) { _, isRevealed in

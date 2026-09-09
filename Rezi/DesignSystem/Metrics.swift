@@ -75,6 +75,8 @@ enum Metrics {
     static let gaugeLineWidth: CGFloat = 7
     /// Outside stroke on the track, from Figma.
     static let gaugeTrackEdgeWidth: CGFloat = 0.92
+    /// Lifts the label towards the score, closing the gap under the arc.
+    static let gaugeLabelOffset: CGFloat = -3
 
     // MARK: - Content column
 
