@@ -53,6 +53,14 @@ enum Motion {
 
     static let promote = Animation.easeInOut(duration: 0.62)
 
+    /// An automatic swipe announces itself before it leaves: the card slides
+    /// far enough to bring the badge to full strength, holds so it can be
+    /// read, and only then flies. Without the pause the affordance existed
+    /// for the length of the fling and was impossible to catch.
+    static let swipeHint = Animation.easeOut(duration: 0.40)
+    /// From the start of the hint to the start of the fling.
+    static let swipeHintDelay: TimeInterval = 0.78
+
     /// Following the finger.
     static let track = Animation.interactiveSpring(response: 0.24, dampingFraction: 0.9)
     /// Letting go without committing. Damped hard, so it glides back instead

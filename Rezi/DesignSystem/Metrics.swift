@@ -216,6 +216,9 @@ enum Metrics {
     static let swipeMaxRotation: Double = 12
     /// Where a flung card lands, well past any screen edge.
     static let swipeExitDistance: CGFloat = 620
+    /// How far an automatic swipe slides before flying. Past
+    /// `swipeCommitDistance`, so the badge is at full strength while it holds.
+    static let swipeHintDistance: CGFloat = 112
 
     /// Scales the hero to the current screen while the content column keeps
     /// its natural point sizes, the way a real app would lay this out.

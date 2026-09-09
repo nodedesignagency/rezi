@@ -89,39 +89,50 @@ struct JobCardStack: View {
 
     // MARK: - Drag affordances
 
-    /// A badge on the side you dragged away from, plus a matching edge tint —
-    /// so the gesture reads as a decision, not just a shove.
+    /// Says what the swipe will do, plainly enough to read while it happens.
+    ///
+    /// This used to be a small pill pinned to the leading edge — which is
+    /// exactly where the company logo sits, so it was half-covered — and it
+    /// only existed for the length of the fling. Centred, with an icon and a
+    /// wash across the whole card, there is something to see; the pause
+    /// before an automatic swipe gives time to see it.
     private var swipeOverlay: some View {
         let progress = model.swipeProgress
-        let applyStrength = Double(max(0, progress))
-        let passStrength = Double(max(0, -progress))
+        let applying = Double(max(0, progress))
+        let passing = Double(max(0, -progress))
+        let strength = max(applying, passing)
         let tint: Color = progress >= 0 ? ReziColor.swipeApply : ReziColor.swipePass
+        let shape = RoundedRectangle(
+            cornerRadius: Metrics.cardCornerRadius,
+            style: .continuous
+        )
 
         return ZStack {
-            RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous)
-                .strokeBorder(tint, lineWidth: 2)
-                .opacity(max(applyStrength, passStrength) * 0.9)
+            shape.fill(tint.opacity(0.16 * strength))
+            shape.strokeBorder(tint, lineWidth: 2).opacity(strength)
 
-            badge("APPLY", color: ReziColor.swipeApply)
-                .opacity(applyStrength)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, Metrics.cardPaddingLeading)
+            badge("APPLY", symbol: "checkmark", color: ReziColor.swipeApply)
+                .opacity(applying)
+                .scaleEffect(0.88 + 0.12 * applying)
 
-            badge("PASS", color: ReziColor.swipePass)
-                .opacity(passStrength)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.trailing, Metrics.cardPaddingTrailing)
+            badge("PASS", symbol: "xmark", color: ReziColor.swipePass)
+                .opacity(passing)
+                .scaleEffect(0.88 + 0.12 * passing)
         }
         .allowsHitTesting(false)
     }
 
-    private func badge(_ text: String, color: Color) -> some View {
-        Text(text)
-            .font(ReziFont.swipeStamp)
-            .foregroundStyle(.white)
-            .padding(.horizontal, 11)
-            .padding(.vertical, 6)
-            .background(Capsule(style: .continuous).fill(color))
-            .shadow(color: color.opacity(0.45), radius: 8, y: 3)
+    private func badge(_ text: String, symbol: String, color: Color) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: symbol)
+                .font(.system(size: 13, weight: .heavy))
+            Text(text)
+                .font(ReziFont.swipeStamp)
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 15)
+        .padding(.vertical, 9)
+        .background(Capsule(style: .continuous).fill(color))
+        .shadow(color: color.opacity(0.45), radius: 10, y: 4)
     }
 }

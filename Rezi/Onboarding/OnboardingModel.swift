@@ -102,6 +102,21 @@ final class OnboardingModel: ObservableObject {
             return
         }
 
+        if userInitiated {
+            // The badge has been on screen for the whole drag, so there is
+            // nothing left to announce.
+            flyAway(direction)
+        } else {
+            withAnimation(Motion.swipeHint) {
+                drag = CGSize(width: Metrics.swipeHintDistance * direction.sign, height: 0)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + Motion.swipeHintDelay) { [weak self] in
+                self?.flyAway(direction)
+            }
+        }
+    }
+
+    private func flyAway(_ direction: SwipeDirection) {
         withAnimation(Motion.fling) {
             drag = CGSize(
                 width: Metrics.swipeExitDistance * direction.sign,
