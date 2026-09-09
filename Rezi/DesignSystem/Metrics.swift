@@ -109,11 +109,15 @@ enum Metrics {
 
     // MARK: - Clouds
 
-    /// The band is five screens wide, so only a fifth is ever visible — which
-    /// is why the design's clouds read soft. You see a slice of one very large
-    /// puff, never a whole one at artwork scale.
-    static let cloudBandWidthRatio: CGFloat = 1990.0 / 393.0
-    static let cloudBandLeftRatio: CGFloat = -798.0 / 393.0
+    /// Wide enough that puffs stay large and soft, but no wider.
+    ///
+    /// At five screens across the artwork's alpha ramp stretched over 313pt of
+    /// screen, leaving the cloud only 22% opaque where the app icon sits and
+    /// putting its dense half below the fade — so all that ever showed was a
+    /// washed-out wisp. Narrower compresses that ramp back into the band where
+    /// the cloud is actually meant to be seen.
+    static let cloudBandWidthRatio: CGFloat = 2.8
+    static let cloudBandLeftRatio: CGFloat = -0.9
     /// Taken from the export rather than the Figma frame, so the artwork is
     /// never stretched. Update if the cloud is re-exported at a different crop.
     static let cloudBandAspect: CGFloat = 3980.0 / 1681.0
@@ -135,7 +139,13 @@ enum Metrics {
     /// How far the band slides each way, as a fraction of screen width. It is
     /// wide enough that it never runs out at this amplitude, so the drift
     /// needs no tiling and can never show a seam.
-    static let cloudDriftTravel: CGFloat = 0.9
+    static let cloudDriftTravel: CGFloat = 0.55
+
+    /// The artwork peaks at 94% alpha and ramps very gradually, so a single
+    /// pass reads thin. Drawing it more than once compounds coverage —
+    /// 1-(1-a)^n — which thickens the cloud without shrinking its puffs or
+    /// touching the artwork.
+    static let cloudDensity: Int = 3
 
     /// A second, smaller copy drawn behind for parallax.
     static let cloudFarScale: CGFloat = 0.7
@@ -143,8 +153,8 @@ enum Metrics {
 
     /// The cloud dissolves to nothing across this band, so the content below
     /// sits on clean white instead of on cloud texture.
-    static let cloudFadeStart: CGFloat = 0.56
-    static let cloudFadeEnd: CGFloat = 0.74
+    static let cloudFadeStart: CGFloat = 0.62
+    static let cloudFadeEnd: CGFloat = 0.82
 
     /// Top edge of a cloud band, placed so its wisps land on `silhouetteY`.
     static func cloudBandTop(

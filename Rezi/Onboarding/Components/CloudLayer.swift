@@ -27,12 +27,16 @@ struct CloudLayer: View {
                     duration: Motion.cloudFarDuration
                 )
 
-                band(
-                    scale: 1,
-                    silhouetteY: Metrics.cloudSilhouetteY,
-                    opacity: 1,
-                    duration: Motion.cloudNearDuration
-                )
+                // Drawn several times over itself: the artwork peaks at 94%
+                // alpha and ramps slowly, so one pass reads as a thin wisp.
+                ForEach(0..<Metrics.cloudDensity, id: \.self) { _ in
+                    band(
+                        scale: 1,
+                        silhouetteY: Metrics.cloudSilhouetteY,
+                        opacity: 1,
+                        duration: Motion.cloudNearDuration
+                    )
+                }
             } else {
                 drawnClouds
             }
