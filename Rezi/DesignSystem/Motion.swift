@@ -40,26 +40,25 @@ enum Motion {
 
     // MARK: - Card stack
 
-    /// A card leaving, and the stack closing up behind it.
+    /// A card leaving.
     ///
-    /// Both are plain ease-in-out rather than springs. A spring overshoots and
-    /// settles, which at this speed read as a snap — the card appeared to be
-    /// flicked away rather than to travel. Eased at both ends it leaves and
-    /// arrives gently, and the two curves match so the departing card and the
-    /// promoting stack move as one gesture.
-    static let fling = Animation.easeInOut(duration: 0.62)
-    /// Slightly past `fling`, so the deck rotates once the card has landed.
-    static let flingSettleDelay: TimeInterval = 0.66
+    /// One continuous curve, deliberately not a symmetric ease. It opens at a
+    /// real speed so the card never looks like it hesitated, cruises through
+    /// the part of the travel that is actually on screen, then accelerates
+    /// away. That shape is what buys the badge its reading time: about eight
+    /// tenths of a second legible with the card still visible, against under
+    /// two tenths on a plain ease-in-out.
+    ///
+    /// An earlier version held the card still mid-swipe to achieve the same
+    /// thing. It read as a freeze. The time has to come out of the curve.
+    static let fling = Animation.timingCurve(0.22, 0.06, 0.72, 0.42, duration: 1.20)
+    /// Just past `fling`, so the deck rotates once the card has landed.
+    static let flingSettleDelay: TimeInterval = 1.24
 
-    static let promote = Animation.easeInOut(duration: 0.62)
-
-    /// An automatic swipe announces itself before it leaves: the card slides
-    /// far enough to bring the badge to full strength, holds so it can be
-    /// read, and only then flies. Without the pause the affordance existed
-    /// for the length of the fling and was impossible to catch.
-    static let swipeHint = Animation.easeOut(duration: 0.40)
-    /// From the start of the hint to the start of the fling.
-    static let swipeHintDelay: TimeInterval = 0.78
+    /// The stack closing up behind it. Shorter than the fling on purpose —
+    /// the gap settles while the card is still on its way out, rather than
+    /// the whole screen waiting for it.
+    static let promote = Animation.easeInOut(duration: 0.75)
 
     /// Following the finger.
     static let track = Animation.interactiveSpring(response: 0.24, dampingFraction: 0.9)
@@ -70,7 +69,7 @@ enum Motion {
     /// Gap between automatic swipes. Long enough that a card is fully at rest
     /// before the next one goes, so the deck reads as one card at a time
     /// rather than a queue being flushed.
-    static let autoplayInterval: Duration = .seconds(3.4)
+    static let autoplayInterval: Duration = .seconds(3.8)
     /// Longer first gap, so the entrance finishes before the deck starts moving.
     static let autoplayFirstInterval: Duration = .seconds(4.0)
 

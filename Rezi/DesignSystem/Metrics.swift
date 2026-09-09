@@ -214,11 +214,13 @@ enum Metrics {
     static let swipeCommitDistance: CGFloat = 96
     /// Degrees of tilt at full commit distance.
     static let swipeMaxRotation: Double = 12
-    /// Where a flung card lands, well past any screen edge.
-    static let swipeExitDistance: CGFloat = 620
-    /// How far an automatic swipe slides before flying. Past
-    /// `swipeCommitDistance`, so the badge is at full strength while it holds.
-    static let swipeHintDistance: CGFloat = 112
+    /// Where a flung card lands. Only just past the screen edge: travel
+    /// beyond it is time the card spends invisible.
+    static let swipeExitDistance: CGFloat = 470
+    /// Drag at which the APPLY / PASS badge reaches full strength. Far
+    /// shorter than the commit distance, so the intent is legible early in
+    /// the swipe instead of at the moment the card is already leaving.
+    static let swipeBadgeDistance: CGFloat = 52
 
     /// Scales the hero to the current screen while the content column keeps
     /// its natural point sizes, the way a real app would lay this out.

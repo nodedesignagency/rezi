@@ -102,18 +102,7 @@ final class OnboardingModel: ObservableObject {
             return
         }
 
-        if userInitiated {
-            // The badge has been on screen for the whole drag, so there is
-            // nothing left to announce.
-            flyAway(direction)
-        } else {
-            withAnimation(Motion.swipeHint) {
-                drag = CGSize(width: Metrics.swipeHintDistance * direction.sign, height: 0)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + Motion.swipeHintDelay) { [weak self] in
-                self?.flyAway(direction)
-            }
-        }
+        flyAway(direction)
     }
 
     private func flyAway(_ direction: SwipeDirection) {
@@ -156,6 +145,15 @@ final class OnboardingModel: ObservableObject {
     var swipeProgress: CGFloat {
         guard Metrics.swipeCommitDistance > 0 else { return 0 }
         return max(-1, min(1, drag.width / Metrics.swipeCommitDistance))
+    }
+
+    /// -1 … 1, how strongly to show the swipe's intent.
+    ///
+    /// Ramps over a much shorter distance than the commit threshold, so the
+    /// badge is readable well before the card is on its way off screen.
+    var swipeSignal: CGFloat {
+        guard Metrics.swipeBadgeDistance > 0 else { return 0 }
+        return max(-1, min(1, drag.width / Metrics.swipeBadgeDistance))
     }
 
     var frontCardRotation: Double {
