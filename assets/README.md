@@ -16,22 +16,49 @@ files for you. Nothing else to do — rebuild and the app picks them up.
 Export from Figma at **@2x and @3x** (and @1x if you like). Name them exactly
 as below. The `@2x` / `@3x` suffix is what the script reads, so keep it.
 
-| Base name | @1x size (pt) | What it is | Required? |
-|---|---|---|---|
-| `onboarding-background` | 400 × 690 | The blue → purple sky gradient behind everything | optional |
-| `clouds` | 1990 × 828 | The white cloud band, **transparent PNG** | optional |
-| `phone-mockup` | 300 × 609 | The light "clay" iPhone the cards sit on | optional |
-| `rezi-icon` | 80 × 80 | The purple app icon with the white **R** | optional |
-| `company-logo` | 36 × 36 | Round blue company mark on the job cards | optional |
+### Bitmaps
 
-So `onboarding-background@3x.png` should be 1200 × 2070 px, and so on.
+| Base name | @1x size (pt) | What it is | In repo? |
+|---|---|---|---|
+| `clouds` | — | The white cloud bank, **transparent PNG** | ✅ @2x |
+| `phone-mockup` | 300 × 609 | The light "clay" iPhone the cards sit on | ✅ @2x |
+| `rezi-icon` | 80 × 80 | The purple app icon with the white **R** | ✅ @2x |
+| `onboarding-background` | 400 × 690 | The blue → purple sky gradient | ➖ drawn |
+| `company-logo` | 36 × 36 | Round company mark on the job cards | ➖ drawn |
+
+So `phone-mockup@3x.png` would be 900 × 1827 px, and so on.
+
+The cloud is placed by measuring its own alpha: the code knows the silhouette
+begins 29.3% down the image and turns fully opaque at 45.1%, and positions it
+so those land where the design puts them. **If you swap in a different cloud
+with a different profile, update `cloudSilhouetteStart` in
+`Rezi/DesignSystem/Metrics.swift`.**
+
+### Vector icons
+
+Dropped in as SVG, kept as vectors, and template-rendered — so the Solar
+duotone second tone survives as alpha and the icons stay sharp at any size.
+
+| File | Where it goes | In repo? |
+|---|---|---|
+| `stat-applications.svg` | Above "Applications Sent" | ✅ |
+| `stat-rating.svg` | Above "App Store Rating" | ✅ |
+| `stat-seekers.svg` | Above "Job Seekers" | ✅ |
 
 ### Every asset is optional
 
-The screen ships with a hand-drawn SwiftUI fallback for each one — a real
-gradient, real drifting clouds, a vector phone frame, a drawn icon. The app
-looks correct **right now** with zero images. Each file you drop in simply
-replaces its fallback. Add them one at a time if you want; nothing breaks.
+Each one has a hand-drawn SwiftUI fallback — a gradient sky, drifting vector
+clouds, a drawn phone frame, a drawn icon, SF Symbols for the stats. The app
+looks correct with zero images. Each file you drop in replaces its fallback,
+so you can add them one at a time and nothing breaks in between.
+
+Still drawn rather than supplied, if you want to send them:
+
+- **`onboarding-background`** — the sky gradient. Currently a real SwiftUI
+  gradient that fades into the clouds, which honestly holds up well; only
+  worth replacing if the design's gradient has texture or noise in it.
+- **`company-logo`** — the round mark on the job cards. Currently a neutral
+  geometric placeholder, deliberately not any real company's logo.
 
 ### Extra company logos (optional)
 

@@ -21,6 +21,17 @@ IMAGESETS=(
   "company-logo:CompanyLogo"
 )
 
+# Vector icons: base name in assets/raw -> imageset name. These go in as a
+# single SVG with vector data preserved and template rendering, so they stay
+# crisp at any size and pick up the tint colour from SwiftUI. The Solar
+# duotone icons carry their second tone as alpha, which template rendering
+# preserves.
+ICONSETS=(
+  "stat-applications:StatApplications"
+  "stat-rating:StatRating"
+  "stat-seekers:StatSeekers"
+)
+
 bold=$(printf '\033[1m'); dim=$(printf '\033[2m')
 green=$(printf '\033[32m'); yellow=$(printf '\033[33m'); reset=$(printf '\033[0m')
 
@@ -94,12 +105,57 @@ JSON
   fi
 }
 
+write_vector_imageset() {
+  local base="$1" name="$2"
+  local dir="$CATALOG/${name}.imageset"
+  local src=""
+
+  for ext in svg SVG pdf PDF; do
+    [ -f "$RAW/${base}.${ext}" ] && src="$RAW/${base}.${ext}"
+  done
+
+  if [ -z "$src" ]; then
+    printf '  %s\xc2\xb7%s %-22s %sno vector yet - using the SF Symbol fallback%s\n' \
+      "$yellow" "$reset" "$name" "$dim" "$reset"
+    return 0
+  fi
+
+  mkdir -p "$dir"
+  find "$dir" -type f ! -name 'Contents.json' -delete
+  local file; file="$(basename "$src")"
+  cp "$src" "$dir/$file"
+
+  cat > "$dir/Contents.json" <<JSON
+{
+  "images" : [
+    {
+      "filename" : "$file",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true,
+    "template-rendering-intent" : "template"
+  }
+}
+JSON
+  printf '  %s\xe2\x9c\x93%s %-22s %s(vector)%s\n' "$green" "$reset" "$name" "$dim" "$reset"
+}
+
 echo
 echo "${bold}Importing assets${reset} ${dim}from assets/raw${reset}"
 echo
 
 for pair in "${IMAGESETS[@]}"; do
   write_imageset "${pair%%:*}" "${pair##*:}"
+done
+
+for pair in "${ICONSETS[@]}"; do
+  write_vector_imageset "${pair%%:*}" "${pair##*:}"
 done
 
 # ---- Numbered company logos: company-logo-1, company-logo-2, ... ----------

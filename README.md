@@ -25,18 +25,20 @@ no SPM dependencies — it builds straight out of the box.
 
 ## Adding your images
 
-Drop exports into **`assets/raw/`**, then:
+Already wired up: the cloud bank, the clay iPhone, the Rezi icon, and the three
+duotone stat icons.
+
+To add more, drop exports into **`assets/raw/`** and run:
 
 ```bash
 ./scripts/import-assets.sh
 ```
 
-See **[assets/README.md](assets/README.md)** for the exact filenames and sizes.
+See **[assets/README.md](assets/README.md)** for filenames and sizes.
 
-**Every asset is optional.** Each one has a hand-drawn SwiftUI fallback — a real
-gradient sky, drifting vector clouds, a drawn phone frame and app icon. The
-screen looks right with zero images in the repo; each file you add just replaces
-its fallback. So you can start the app today and add art as it lands.
+**Every asset is optional.** Each one has a hand-drawn SwiftUI fallback, so the
+screen looks right whether or not the art is there — the sky gradient and the
+job-card company mark are still drawn rather than supplied.
 
 ---
 
