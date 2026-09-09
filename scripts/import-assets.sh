@@ -173,6 +173,35 @@ while :; do
   fi
 done
 
+# ---- Fonts ---------------------------------------------------------------
+# Anything in assets/raw/fonts is copied into the app, and registered at launch
+# by InterFont.registerBundledFonts(). Drop the static Inter TTFs there to move
+# the whole screen off SF Pro.
+FONT_SRC="$RAW/fonts"
+FONT_DIR="$ROOT/Rezi/Fonts"
+mkdir -p "$FONT_DIR"
+find "$FONT_DIR" -type f \( -name '*.ttf' -o -name '*.otf' \) -delete 2>/dev/null || true
+
+font_count=0
+if [ -d "$FONT_SRC" ]; then
+  while IFS= read -r font; do
+    [ -n "$font" ] || continue
+    cp "$font" "$FONT_DIR/"
+    font_count=$((font_count + 1))
+  done <<EOF
+$(find "$FONT_SRC" -maxdepth 1 -type f \( -name '*.ttf' -o -name '*.otf' \) 2>/dev/null)
+EOF
+fi
+
+if [ "$font_count" -gt 0 ]; then
+  printf '  %s\xe2\x9c\x93%s %-22s %s(%d file%s)%s\n' \
+    "$green" "$reset" "Fonts" "$dim" "$font_count" \
+    "$([ "$font_count" -eq 1 ] || echo s)" "$reset"
+else
+  printf '  %s\xc2\xb7%s %-22s %sno fonts yet - using SF Pro%s\n' \
+    "$yellow" "$reset" "Fonts" "$dim" "$reset"
+fi
+
 # ---- App icon -------------------------------------------------------------
 APPICON_SRC=""
 for ext in png PNG; do

@@ -52,17 +52,23 @@ enum ReziColor {
     static let headline = Color(hex: 0x08080A)
     static let subhead = Color(hex: 0x64646E)
 
-    // MARK: Stats
+    // MARK: Stats panel
 
-    static let statsSurface = Color(hex: 0xF1F1F6)
-    static let statValue = Color(hex: 0x101014)
-    static let statLabel = Color(hex: 0x8B8B93)
-    static let statDivider = Color(hex: 0xDFDFE6)
+    /// The card wrapping both the stats row and the button.
+    static let panelSurface = Color(hex: 0xF2F4F8)
+    /// The stats row's own fill, sitting on the panel at 60%. Almost the same
+    /// colour as the panel, so it reads as a barely-there inset rather than a
+    /// second card.
+    static let statsSurface = Color(hex: 0xE9EDF4)
+    static let statsSurfaceOpacity: Double = 0.6
+
+    static let statValue = Color.black
+    static let statLabel = Color.black
 
     // MARK: Actions
 
-    static let accent = Color(hex: 0x5B6CF0)
-    static let accentPressed = Color(hex: 0x4E5EDC)
+    static let accent = Color(hex: 0x4D70EB)
+    static let accentPressed = Color(hex: 0x4162D2)
     static let onAccent = Color.white
     static let signInMuted = Color(hex: 0x9A9AA3)
 

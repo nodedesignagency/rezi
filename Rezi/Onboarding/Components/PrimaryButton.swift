@@ -47,7 +47,7 @@ struct PrimaryButton: View {
                 }
             }
             .clipShape(shape)
-            .shadow(color: ReziColor.accent.opacity(0.38), radius: 16, x: 0, y: 8)
+            .shadow(color: ReziColor.accent.opacity(0.30), radius: 12, x: 0, y: 6)
     }
 
     /// A slanted highlight that travels across the button. It spends most of

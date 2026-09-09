@@ -2,6 +2,13 @@ import SwiftUI
 
 @main
 struct ReziApp: App {
+
+    init() {
+        // Picks up Inter if the font files have been bundled. Everything falls
+        // back to SF Pro at the same sizes when they have not.
+        InterFont.registerBundledFonts()
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()

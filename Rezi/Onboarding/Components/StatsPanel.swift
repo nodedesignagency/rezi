@@ -68,23 +68,52 @@ struct StatIcon: View {
     }
 }
 
-/// The three-up proof bar above the button.
-struct StatsBar: View {
+// MARK: - Panel
+
+/// The proof bar and the Get Started button, in one card.
+///
+/// Figma builds these as a single 353 x 140 frame — 4pt padding, 4pt gap — so
+/// the button sits *inside* the panel with the fill showing as a thin ring
+/// around it, rather than standing alone below the card.
+struct StatsPanel: View {
     var appeared: Bool
+    var buttonTitle: String
+    var buttonAction: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let stats = OnboardingStat.all
 
     var body: some View {
+        VStack(spacing: Metrics.panelGap) {
+            statsRow
+
+            PrimaryButton(title: buttonTitle, action: buttonAction)
+                .entrance(appeared, delay: Motion.Beat.button, offsetY: 0, startScale: 0.94)
+        }
+        .padding(Metrics.panelPadding)
+        .background(
+            UnevenRoundedRectangle(
+                topLeadingRadius: Metrics.panelTopRadius,
+                bottomLeadingRadius: Metrics.panelBottomRadius,
+                bottomTrailingRadius: Metrics.panelBottomRadius,
+                topTrailingRadius: Metrics.panelTopRadius,
+                style: .continuous
+            )
+            .fill(ReziColor.panelSurface)
+        )
+        .entrance(appeared, delay: Motion.Beat.stats, offsetY: 24)
+    }
+
+    // MARK: Stats row
+
+    private var statsRow: some View {
         HStack(spacing: 0) {
             ForEach(stats.indices, id: \.self) { index in
                 let stat = stats[index]
 
                 if index > 0 {
-                    Rectangle()
-                        .fill(ReziColor.statDivider)
-                        .frame(width: 1, height: Metrics.statsDividerHeight)
+                    divider
                 }
 
                 column(stat, index: index)
@@ -94,8 +123,26 @@ struct StatsBar: View {
         .frame(height: Metrics.statsHeight)
         .background(
             RoundedRectangle(cornerRadius: Metrics.statsCornerRadius, style: .continuous)
-                .fill(ReziColor.statsSurface)
+                .fill(ReziColor.statsSurface.opacity(ReziColor.statsSurfaceOpacity))
         )
+    }
+
+    /// A hairline that fades out at both ends rather than stopping flat.
+    private var divider: some View {
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    stops: [
+                        .init(color: .black.opacity(0), location: 0),
+                        .init(color: .black, location: 0.5),
+                        .init(color: .black.opacity(0), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .frame(width: Metrics.statsDividerWidth, height: Metrics.statsDividerHeight)
+            .opacity(Metrics.statsDividerOpacity)
     }
 
     private func column(_ stat: OnboardingStat, index: Int) -> some View {
@@ -110,6 +157,7 @@ struct StatsBar: View {
                 suffix: stat.suffix
             )
             .font(ReziFont.statValue)
+            .tracking(ReziFont.statValueTracking)
             .foregroundStyle(ReziColor.statValue)
             .animation(countAnimation(delay: delay), value: appeared)
 
@@ -119,7 +167,7 @@ struct StatsBar: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
-        .entrance(appeared, delay: delay, offsetY: 14)
+        .entrance(appeared, delay: delay, offsetY: 10)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
             "\(stat.value.formatted())\(stat.suffix) \(stat.label)"

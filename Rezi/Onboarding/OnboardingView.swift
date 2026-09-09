@@ -100,14 +100,13 @@ struct OnboardingView: View {
 
             gap(Metrics.subheadToStats)
 
-            StatsBar(appeared: appeared)
+            StatsPanel(
+                appeared: appeared,
+                buttonTitle: "Get Started",
+                buttonAction: onGetStarted
+            )
 
-            gap(Metrics.statsToButton)
-
-            PrimaryButton(title: "Get Started", action: onGetStarted)
-                .entrance(appeared, delay: Motion.Beat.button, offsetY: 26)
-
-            gap(Metrics.buttonToSignIn)
+            gap(Metrics.panelToSignIn)
 
             signInRow
                 .entrance(appeared, delay: Motion.Beat.signIn, offsetY: 12)

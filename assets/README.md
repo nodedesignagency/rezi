@@ -72,6 +72,30 @@ the script installs it as the real app icon.
 
 ---
 
+## Fonts
+
+The design is set in **Inter**, which iOS does not ship. Everything currently
+falls back to SF Pro at the same sizes and weights, so the screen looks right
+either way — but the real thing needs the font files.
+
+Download the **static** Inter TTFs (not the variable font — SwiftUI handles
+named weights better) from
+[github.com/rsms/inter/releases](https://github.com/rsms/inter/releases), and
+drop these into **`assets/raw/fonts/`**:
+
+```
+Inter-Regular.ttf
+Inter-Medium.ttf
+Inter-SemiBold.ttf
+Inter-Bold.ttf
+```
+
+Then `./scripts/import-assets.sh` and rebuild. They are registered at launch,
+so there is no Info.plist to edit and no code change — the whole screen moves
+over to Inter at once. Names ending `Inter_18pt-Medium.ttf` work too.
+
+---
+
 ## Formats
 
 - **PNG** for anything with transparency (clouds, icons, logos).

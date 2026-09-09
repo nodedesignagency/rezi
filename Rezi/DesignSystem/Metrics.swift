@@ -60,8 +60,8 @@ enum Metrics {
 
     // MARK: - Content column
 
-    /// The column is 353 wide at x 20, and the stats/button sit at x 24.
-    static let contentHorizontalPadding: CGFloat = 24
+    /// The content column is 353 wide at x 20 in the 393 frame.
+    static let contentHorizontalPadding: CGFloat = 20
 
     static let appIconSize: CGFloat = 80
 
@@ -70,12 +70,30 @@ enum Metrics {
     static let iconToHeadline: CGFloat = 20
     static let headlineToSubhead: CGFloat = 14
     static let subheadToStats: CGFloat = 28
-    static let statsToButton: CGFloat = 4
-    static let buttonToSignIn: CGFloat = 20
+    static let panelToSignIn: CGFloat = 16
+
+    // MARK: Stats panel
+    //
+    // Figma wraps the stats row *and* the button in one 353 x 140 frame with
+    // 4pt padding and a 4pt gap: 4 + 76 + 4 + 52 + 4 = 140. The button is
+    // inside the card, not below it.
+
+    static let panelPadding: CGFloat = 4
+    static let panelGap: CGFloat = 4
+    /// Corner radius is "Mixed" in Figma: the bottom hugs the button's pill
+    /// (26 + 4 of padding), the top sits tighter.
+    static let panelTopRadius: CGFloat = 24
+    static let panelBottomRadius: CGFloat = 30
 
     static let statsHeight: CGFloat = 76
-    static let statsCornerRadius: CGFloat = 18
+    /// Figma reads 60, which Figma itself clamps to half the height.
+    static let statsCornerRadius: CGFloat = 38
+
     static let statsDividerHeight: CGFloat = 42
+    static let statsDividerWidth: CGFloat = 1
+    /// The divider is a black gradient that fades out at both ends, the whole
+    /// path drawn at 10%.
+    static let statsDividerOpacity: Double = 0.10
 
     static let buttonHeight: CGFloat = 52
     static let buttonCornerRadius: CGFloat = 26

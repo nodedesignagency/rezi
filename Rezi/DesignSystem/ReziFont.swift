@@ -2,32 +2,37 @@ import SwiftUI
 
 /// Type scale for the onboarding screen.
 ///
-/// Sizes were recovered from the Figma frame by measuring each text node's
-/// rendered width against SF Pro's advance widths, so they match the design
-/// rather than being rounded to the nearest system text style.
+/// Everything routes through `InterFont`, so the screen is set in Inter when
+/// the font files are bundled and in SF Pro at the same sizes when they are not.
+///
+/// Sizes marked "from Figma" were read straight off the inspector. The rest
+/// were recovered by measuring each text node's rendered width against the
+/// font's advance widths.
 enum ReziFont {
 
     // Hero copy
-    static let headline = Font.system(size: 32, weight: .bold)
-    static let subhead = Font.system(size: 15, weight: .regular)
+    static let headline = InterFont.font(size: 32, weight: .bold)
+    static let subhead = InterFont.font(size: 15, weight: .regular)
 
     // Job card
-    static let cardTitle = Font.system(size: 16, weight: .semibold)
-    static let cardMeta = Font.system(size: 13, weight: .regular)
+    static let cardTitle = InterFont.font(size: 16, weight: .semibold)
+    static let cardMeta = InterFont.font(size: 13, weight: .regular)
 
     // Score gauge
-    static let gaugeScore = Font.system(size: 14, weight: .bold)
-    static let gaugeLabel = Font.system(size: 10, weight: .semibold)
+    static let gaugeScore = InterFont.font(size: 14, weight: .bold)
+    static let gaugeLabel = InterFont.font(size: 10, weight: .semibold)
 
-    // Stats bar
-    static let statValue = Font.system(size: 16, weight: .bold)
-    static let statLabel = Font.system(size: 11, weight: .medium)
+    // Stats — from Figma
+    static let statValue = InterFont.font(size: 14, weight: .medium)
+    static let statLabel = InterFont.font(size: 10, weight: .regular)
+    /// Figma sets -1% letter spacing on the stat value.
+    static let statValueTracking: CGFloat = -0.14
 
     // Actions
-    static let button = Font.system(size: 19, weight: .semibold)
-    static let footnote = Font.system(size: 14, weight: .regular)
-    static let footnoteAction = Font.system(size: 14, weight: .semibold)
+    static let button = InterFont.font(size: 19, weight: .semibold)
+    static let footnote = InterFont.font(size: 14, weight: .regular)
+    static let footnoteAction = InterFont.font(size: 14, weight: .semibold)
 
     /// Overlay stamps that appear while a card is being dragged.
-    static let swipeStamp = Font.system(size: 15, weight: .heavy)
+    static let swipeStamp = InterFont.font(size: 15, weight: .heavy)
 }
