@@ -23,13 +23,16 @@ enum ReziFont {
     /// default line box, so this is the difference, not the whole value.
     static let subheadLineSpacing: CGFloat = 2.7
 
-    // Job card
-    static let cardTitle = InterFont.font(size: 16, weight: .semibold)
-    static let cardMeta = InterFont.font(size: 13, weight: .regular)
+    // Job card — from Figma
+    static let cardTitle = InterFont.font(size: 16, weight: .medium)
+    static let cardMeta = InterFont.font(size: 10, weight: .medium)
+    /// Both carry -2%.
+    static let cardTitleTracking: CGFloat = -0.32
+    static let cardMetaTracking: CGFloat = -0.20
 
-    // Score gauge
-    static let gaugeScore = InterFont.font(size: 14, weight: .bold)
-    static let gaugeLabel = InterFont.font(size: 10, weight: .semibold)
+    // Score gauge — from Figma. Both sit at 0% tracking.
+    static let gaugeScore = InterFont.font(size: 12, weight: .medium)
+    static let gaugeLabel = InterFont.font(size: 8, weight: .regular)
 
     // Stats — from Figma
     static let statValue = InterFont.font(size: 14, weight: .medium)

@@ -62,12 +62,13 @@ enum ReziColor {
     // MARK: Cards
 
     static let cardSurface = Color.white
-    static let cardTitle = Color(hex: 0x101014)
-    static let cardMeta = Color(hex: 0x8B8B93)
+    static let cardTitle = Color.black
+    static let cardMeta = Color(hex: 0x5A5A5A)
     static let cardDivider = Color(hex: 0xD8D8E0)
 
     // MARK: Score gauge
 
+    static let gaugeScore = Color(hex: 0x0A0D14)
     static let gaugeTrack = Color(hex: 0xE2E4E9)
     /// The track carries a 0.92 outside stroke, which reads as a soft lip
     /// around it rather than an outline.

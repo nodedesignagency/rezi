@@ -15,6 +15,7 @@ struct JobCardView: View {
             VStack(alignment: .leading, spacing: Metrics.cardTitleToMeta) {
                 Text(job.title)
                     .font(ReziFont.cardTitle)
+                    .tracking(ReziFont.cardTitleTracking)
                     .foregroundStyle(ReziColor.cardTitle)
                     .lineLimit(1)
 
@@ -26,6 +27,7 @@ struct JobCardView: View {
                     Text(job.location)
                 }
                 .font(ReziFont.cardMeta)
+                .tracking(ReziFont.cardMetaTracking)
                 .foregroundStyle(ReziColor.cardMeta)
                 .lineLimit(1)
             }

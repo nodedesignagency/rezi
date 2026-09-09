@@ -65,7 +65,9 @@ enum Metrics {
     static let cardPaddingLeading: CGFloat = 20
     static let cardPaddingTrailing: CGFloat = 17.4
     static let cardLogoToText: CGFloat = 12
-    static let cardTitleToMeta: CGFloat = 4
+    /// Figma stacks the two lines into a 36pt block. At 16pt over 10pt that
+    /// leaves ~5 between the line boxes.
+    static let cardTitleToMeta: CGFloat = 5
     static let cardMetaDividerHeight: CGFloat = 10
 
     /// Gauge arc: 62.77 across in Figma, drawn inside a 98pt-wide slot.

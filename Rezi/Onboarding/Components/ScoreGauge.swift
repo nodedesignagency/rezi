@@ -26,7 +26,7 @@ struct ScoreGauge: View {
                 arc
                 Text("\(score)")
                     .font(ReziFont.gaugeScore)
-                    .foregroundStyle(ReziColor.cardTitle)
+                    .foregroundStyle(ReziColor.gaugeScore)
                     .offset(y: 2)
             }
             .frame(width: diameter, height: diameter / 2 + lineWidth / 2)
