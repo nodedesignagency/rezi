@@ -40,24 +40,31 @@ enum Motion {
 
     // MARK: - Card stack
 
-    /// A card being thrown off screen. Duration-based on purpose: the deck
-    /// rotation is committed when this finishes, so it needs a known end.
-    static let fling = Animation.timingCurve(0.2, 0.8, 0.4, 1.0, duration: 0.38)
+    /// A card leaving, and the stack closing up behind it.
+    ///
+    /// Both are plain ease-in-out rather than springs. A spring overshoots and
+    /// settles, which at this speed read as a snap — the card appeared to be
+    /// flicked away rather than to travel. Eased at both ends it leaves and
+    /// arrives gently, and the two curves match so the departing card and the
+    /// promoting stack move as one gesture.
+    static let fling = Animation.easeInOut(duration: 0.62)
     /// Slightly past `fling`, so the deck rotates once the card has landed.
-    static let flingSettleDelay: TimeInterval = 0.41
+    static let flingSettleDelay: TimeInterval = 0.66
 
-    /// The cards behind moving up a step as the front one leaves.
-    static let promote = Animation.spring(response: 0.44, dampingFraction: 0.80)
+    static let promote = Animation.easeInOut(duration: 0.62)
 
     /// Following the finger.
-    static let track = Animation.interactiveSpring(response: 0.22, dampingFraction: 0.86)
-    /// Letting go without committing.
-    static let settle = Animation.spring(response: 0.38, dampingFraction: 0.70)
+    static let track = Animation.interactiveSpring(response: 0.24, dampingFraction: 0.9)
+    /// Letting go without committing. Damped hard, so it glides back instead
+    /// of bouncing.
+    static let settle = Animation.easeInOut(duration: 0.42)
 
-    /// Gap between automatic swipes.
-    static let autoplayInterval: Duration = .seconds(2.8)
+    /// Gap between automatic swipes. Long enough that a card is fully at rest
+    /// before the next one goes, so the deck reads as one card at a time
+    /// rather than a queue being flushed.
+    static let autoplayInterval: Duration = .seconds(3.4)
     /// Longer first gap, so the entrance finishes before the deck starts moving.
-    static let autoplayFirstInterval: Duration = .seconds(3.4)
+    static let autoplayFirstInterval: Duration = .seconds(4.0)
 
     // MARK: - Gauge
 

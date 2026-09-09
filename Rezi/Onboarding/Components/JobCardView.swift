@@ -7,7 +7,6 @@ import SwiftUI
 struct JobCardView: View {
     var job: JobCard
     var revealed: Bool
-    var isFront: Bool
 
     var body: some View {
         HStack(spacing: 0) {
@@ -38,8 +37,7 @@ struct JobCardView: View {
                 score: job.score,
                 label: job.scoreLabel,
                 color: job.scoreColor,
-                revealed: revealed,
-                isFront: isFront
+                revealed: revealed
             )
         }
         .padding(.leading, Metrics.cardPaddingLeading)
@@ -48,11 +46,6 @@ struct JobCardView: View {
         .background(
             RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous)
                 .fill(ReziColor.cardSurface)
-        )
-        // Inside stroke, per Figma — `strokeBorder` insets, `stroke` straddles.
-        .overlay(
-            RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous)
-                .strokeBorder(ReziColor.cardBorder, lineWidth: Metrics.cardBorderWidth)
         )
         .clipShape(RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous))
         .accessibilityElement(children: .combine)

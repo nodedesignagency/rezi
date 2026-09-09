@@ -33,8 +33,6 @@ enum Metrics {
     static let cardHeight: CGFloat = 76
     static let cardTop: CGFloat = 150
     static let cardCornerRadius: CGFloat = 23.53
-    /// Inside stroke on the card.
-    static let cardBorderWidth: CGFloat = 2.35
     /// Drop shadow: y 47.06, blur 50.88, #16192E at 5%. Figma's blur is
     /// roughly twice SwiftUI's radius.
     static let cardShadowY: CGFloat = 47.06

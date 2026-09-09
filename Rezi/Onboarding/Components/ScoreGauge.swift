@@ -3,17 +3,16 @@ import SwiftUI
 
 /// The half-donut resume-match score on each job card.
 ///
-/// The arc sweeps up from zero when the card first appears, and sweeps again
-/// each time the card is promoted to the front of the deck — so the number
-/// reads as freshly scored rather than as static chrome.
+/// The arc sweeps up from zero once, when the card first appears. It
+/// deliberately does *not* re-sweep on promotion: with the deck cycling, a
+/// gauge redrawing itself every few seconds reads as a glitch rather than as
+/// a score being calculated.
 struct ScoreGauge: View {
     var score: Int
     var label: String
     var color: Color
     /// True once the entrance has reached the card stack.
     var revealed: Bool
-    /// True while this card is the front one.
-    var isFront: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var progress: CGFloat = 0
@@ -39,9 +38,6 @@ struct ScoreGauge: View {
         .onAppear { sweep(animated: revealed) }
         .onChange(of: revealed) { _, isRevealed in
             if isRevealed { sweep(animated: true) }
-        }
-        .onChange(of: isFront) { _, nowFront in
-            if nowFront, revealed { sweep(animated: true) }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Match score \(score) out of 100, \(label)")
@@ -92,11 +88,8 @@ struct ScoreGauge: View {
             return
         }
 
-        // Snap back to empty, then fill on the next tick.
-        //
-        // Both in one pass would collapse into a single update, and when the
-        // gauge is already full — exactly the case when a card is promoted to
-        // the front — the value would not change and nothing would animate.
+        // Snap back to empty, then fill on the next tick: both in one pass
+        // would collapse into a single update and animate nothing.
         progress = 0
         DispatchQueue.main.async {
             withAnimation(Motion.gaugeSweep.delay(Motion.gaugeSweepDelay)) {

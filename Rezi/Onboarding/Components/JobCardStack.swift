@@ -37,11 +37,7 @@ struct JobCardStack: View {
         let isFront = index == 0
         let isSpare = depth >= Metrics.hiddenCardDepth
 
-        JobCardView(
-            job: job,
-            revealed: appeared,
-            isFront: isFront
-        )
+        JobCardView(job: job, revealed: appeared)
         .overlay {
             if isFront {
                 swipeOverlay
