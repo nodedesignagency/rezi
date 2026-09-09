@@ -217,6 +217,9 @@ enum Metrics {
     /// Where a flung card lands. Only just past the screen edge: travel
     /// beyond it is time the card spends invisible.
     static let swipeExitDistance: CGFloat = 470
+    /// Border drawn around a card while it is being swiped.
+    static let swipeBorderWidth: CGFloat = 1.2
+
     /// Drag at which the APPLY / PASS badge reaches full strength. Far
     /// shorter than the commit distance, so the intent is legible early in
     /// the swipe instead of at the moment the card is already leaving.

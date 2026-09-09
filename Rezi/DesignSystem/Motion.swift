@@ -45,15 +45,15 @@ enum Motion {
     /// One continuous curve, deliberately not a symmetric ease. It opens at a
     /// real speed so the card never looks like it hesitated, cruises through
     /// the part of the travel that is actually on screen, then accelerates
-    /// away. That shape is what buys the badge its reading time: about eight
-    /// tenths of a second legible with the card still visible, against under
-    /// two tenths on a plain ease-in-out.
+    /// away. Since the badge now comes up on its own curve, the duration is
+    /// free to be set by feel: at 0.85s the card still clears the screen with
+    /// roughly half a second of the badge legible behind it.
     ///
     /// An earlier version held the card still mid-swipe to achieve the same
     /// thing. It read as a freeze. The time has to come out of the curve.
-    static let fling = Animation.timingCurve(0.22, 0.06, 0.72, 0.42, duration: 1.20)
+    static let fling = Animation.timingCurve(0.22, 0.06, 0.72, 0.42, duration: 0.85)
     /// Just past `fling`, so the deck rotates once the card has landed.
-    static let flingSettleDelay: TimeInterval = 1.24
+    static let flingSettleDelay: TimeInterval = 0.89
 
     /// Bringing the badge up at the start of a swipe. Short and on its own,
     /// so it is at full strength while the card is still well on screen
@@ -63,7 +63,7 @@ enum Motion {
     /// The stack closing up behind it. Shorter than the fling on purpose —
     /// the gap settles while the card is still on its way out, rather than
     /// the whole screen waiting for it.
-    static let promote = Animation.easeInOut(duration: 0.75)
+    static let promote = Animation.easeInOut(duration: 0.55)
 
     /// Following the finger.
     static let track = Animation.interactiveSpring(response: 0.24, dampingFraction: 0.9)

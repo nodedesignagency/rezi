@@ -110,7 +110,7 @@ struct JobCardStack: View {
 
         return ZStack {
             shape.fill(tint.opacity(0.16 * strength))
-            shape.strokeBorder(tint, lineWidth: 2).opacity(strength)
+            shape.strokeBorder(tint, lineWidth: Metrics.swipeBorderWidth).opacity(strength)
 
             badge("APPLY", symbol: "checkmark", color: ReziColor.swipeApply)
                 .opacity(applying)
