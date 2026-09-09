@@ -1,0 +1,32 @@
+# ---- macOS ----
+.DS_Store
+._*
+
+# ---- Xcode ----
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Keep the shared scheme, ignore per-user schemes
+!Rezi.xcodeproj/xcshareddata/
+Rezi.xcodeproj/project.xcworkspace/xcuserdata/
+Rezi.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# ---- SwiftPM ----
+.swiftpm/
+.build/
+Packages/
+Package.resolved
+
+# ---- Fastlane / misc ----
+fastlane/report.xml
+fastlane/screenshots
+*.log
+.env

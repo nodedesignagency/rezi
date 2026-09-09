@@ -1,0 +1,14 @@
+# Treat design assets as binary so git never mangles them
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.webp    binary
+*.pdf     binary
+*.mp4     binary
+*.mov     binary
+*.lottie  binary
+*.ttf     binary
+*.otf     binary
+
+# Xcode project file: avoid noisy merges
+*.pbxproj text -merge=union eol=lf
