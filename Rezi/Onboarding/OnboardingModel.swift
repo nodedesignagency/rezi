@@ -22,6 +22,15 @@ final class OnboardingModel: ObservableObject {
     /// While true, cards behind the front one render one depth shallower.
     @Published private(set) var promoting = false
 
+    /// -1 … 1, how strongly to show the swipe's intent. Drives the badge.
+    ///
+    /// Deliberately its own value rather than being derived from `drag` in
+    /// the view. Opacity is a rendered modifier, so a derived one would be
+    /// animated on the fling's own curve and would not reach full strength
+    /// until the card had already left. This is driven to full on its own
+    /// short curve at the moment the swipe starts.
+    @Published private(set) var swipeIntent: CGFloat = 0
+
     /// Bumped after every swipe so the autoplay timer restarts from zero.
     @Published private(set) var autoplayTick = 0
 
@@ -57,6 +66,14 @@ final class OnboardingModel: ObservableObject {
     func updateDrag(_ translation: CGSize) {
         guard !isSwiping else { return }
         drag = translation
+        swipeIntent = intent(for: translation.width)
+    }
+
+    /// Ramps over a much shorter distance than the commit threshold, so the
+    /// badge is readable long before a drag would actually commit.
+    private func intent(for width: CGFloat) -> CGFloat {
+        guard Metrics.swipeBadgeDistance > 0 else { return 0 }
+        return max(-1, min(1, width / Metrics.swipeBadgeDistance))
     }
 
     /// Decides between committing and springing back.
@@ -76,7 +93,10 @@ final class OnboardingModel: ObservableObject {
                 userInitiated: true
             )
         } else {
-            withAnimation(Motion.settle) { drag = .zero }
+            withAnimation(Motion.settle) {
+                drag = .zero
+                swipeIntent = 0
+            }
         }
     }
 
@@ -95,6 +115,7 @@ final class OnboardingModel: ObservableObject {
             withAnimation(Motion.entranceReduced) {
                 rotateDeck()
                 drag = .zero
+                swipeIntent = 0
                 promoting = false
             }
             isSwiping = false
@@ -106,6 +127,12 @@ final class OnboardingModel: ObservableObject {
     }
 
     private func flyAway(_ direction: SwipeDirection) {
+        // Its own, much shorter curve. Sharing the fling's would fade the
+        // badge in over the entire departure.
+        withAnimation(Motion.swipeIntentReveal) {
+            swipeIntent = direction.sign
+        }
+
         withAnimation(Motion.fling) {
             drag = CGSize(
                 width: Metrics.swipeExitDistance * direction.sign,
@@ -127,6 +154,7 @@ final class OnboardingModel: ObservableObject {
         withTransaction(transaction) {
             rotateDeck()
             drag = .zero
+            swipeIntent = 0
             promoting = false
         }
         isSwiping = false
@@ -145,15 +173,6 @@ final class OnboardingModel: ObservableObject {
     var swipeProgress: CGFloat {
         guard Metrics.swipeCommitDistance > 0 else { return 0 }
         return max(-1, min(1, drag.width / Metrics.swipeCommitDistance))
-    }
-
-    /// -1 … 1, how strongly to show the swipe's intent.
-    ///
-    /// Ramps over a much shorter distance than the commit threshold, so the
-    /// badge is readable well before the card is on its way off screen.
-    var swipeSignal: CGFloat {
-        guard Metrics.swipeBadgeDistance > 0 else { return 0 }
-        return max(-1, min(1, drag.width / Metrics.swipeBadgeDistance))
     }
 
     var frontCardRotation: Double {

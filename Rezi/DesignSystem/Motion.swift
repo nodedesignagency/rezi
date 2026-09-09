@@ -55,6 +55,11 @@ enum Motion {
     /// Just past `fling`, so the deck rotates once the card has landed.
     static let flingSettleDelay: TimeInterval = 1.24
 
+    /// Bringing the badge up at the start of a swipe. Short and on its own,
+    /// so it is at full strength while the card is still well on screen
+    /// rather than arriving with it at the edge.
+    static let swipeIntentReveal = Animation.easeOut(duration: 0.22)
+
     /// The stack closing up behind it. Shorter than the fling on purpose —
     /// the gap settles while the card is still on its way out, rather than
     /// the whole screen waiting for it.
@@ -69,9 +74,9 @@ enum Motion {
     /// Gap between automatic swipes. Long enough that a card is fully at rest
     /// before the next one goes, so the deck reads as one card at a time
     /// rather than a queue being flushed.
-    static let autoplayInterval: Duration = .seconds(3.8)
+    static let autoplayInterval: Duration = .seconds(1.9)
     /// Longer first gap, so the entrance finishes before the deck starts moving.
-    static let autoplayFirstInterval: Duration = .seconds(4.0)
+    static let autoplayFirstInterval: Duration = .seconds(2.4)
 
     // MARK: - Gauge
 

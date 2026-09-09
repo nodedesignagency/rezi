@@ -94,11 +94,11 @@ struct JobCardStack: View {
     /// This used to be a small pill pinned to the leading edge — which is
     /// exactly where the company logo sits, so it was half-covered — and it
     /// only existed for the length of the fling. Centred, with an icon and a
-    /// wash across the whole card, there is something to see; ramping it over
-    /// `swipeBadgeDistance` rather than the commit distance brings it up
-    /// early enough in the travel to read.
+    /// wash across the whole card, there is something to see; and it is
+    /// driven by `swipeIntent`, which comes up on its own short curve rather
+    /// than fading in over the whole length of the departure.
     private var swipeOverlay: some View {
-        let progress = model.swipeSignal
+        let progress = model.swipeIntent
         let applying = Double(max(0, progress))
         let passing = Double(max(0, -progress))
         let strength = max(applying, passing)
