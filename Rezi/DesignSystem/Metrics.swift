@@ -8,9 +8,15 @@ enum Metrics {
     static let designWidth: CGFloat = 393
     static let designHeight: CGFloat = 852
 
-    /// How much of the screen height the sky gradient covers before it
-    /// dissolves into white. Background image in Figma is 690pt of 852.
-    static let skyHeightRatio: CGFloat = 0.81
+    /// How much of the screen height the sky covers before it dissolves into
+    /// the clouds.
+    ///
+    /// Deliberately shorter than the 690-of-852 background image in Figma: the
+    /// gradient's full blue → violet → magenta range has to resolve inside the
+    /// band that is actually visible above the cloud line, not below it.
+    static let skyHeightRatio: CGFloat = 0.52
+    /// Where the sky starts fading out, as a fraction of its own height.
+    static let skyFadeStart: CGFloat = 0.70
 
     // MARK: - Hero (phone + card stack)
 
@@ -106,20 +112,35 @@ enum Metrics {
     static let cloudAspect: CGFloat = 1300.0 / 1658.0
     static let cloudSilhouetteStart: CGFloat = 0.293
 
-    /// Near layer: how tall the cloud is drawn, as a fraction of the screen.
-    static let cloudNearHeightRatio: CGFloat = 0.74
-    /// Where its silhouette should land, as a fraction of screen height.
-    static let cloudNearSilhouetteY: CGFloat = 0.41
+    /// How wide the cloud is drawn, as a multiple of the screen width.
+    ///
+    /// Figma lays the cloud band out 1990pt wide against a 393pt frame — five
+    /// screens across — which is why its puffs read as large and soft rather
+    /// than busy. Drawing the artwork near its native size made it look
+    /// detailed and hard by comparison, so it is scaled well past the screen
+    /// and only a portion is ever visible.
+    static let cloudNearWidthMultiple: CGFloat = 2.1
+    /// Where the silhouette should land, as a fraction of screen height.
+    static let cloudNearSilhouetteY: CGFloat = 0.42
+    /// Softens the photographic detail into the drawn look of the design.
+    /// Set to 0 to see the artwork exactly as exported.
+    static let cloudNearBlur: CGFloat = 2.5
+    /// Overhang each side of the clip, so the blur's soft edge falls off
+    /// screen instead of feathering the cloud against the screen edges.
+    static let cloudBlurBleed: CGFloat = 8
 
-    /// Far layer — soft, distant haze drawn above the near clouds.
+    /// Far layer — drawn haze, so it never resolves into a hard edge.
     static let cloudFarHeightRatio: CGFloat = 0.30
-    static let cloudFarTopRatio: CGFloat = 0.36
-    static let cloudFarOpacity: Double = 0.55
+    static let cloudFarTopRatio: CGFloat = 0.34
+    static let cloudFarOpacity: Double = 0.5
 
-    /// Top edge of the near cloud image, so its silhouette lands on target.
-    static func cloudNearTop(screenHeight: CGFloat) -> CGFloat {
-        let tileHeight = screenHeight * cloudNearHeightRatio
-        return screenHeight * cloudNearSilhouetteY - tileHeight * cloudSilhouetteStart
+    /// Geometry for the near cloud, positioned so its silhouette lands on
+    /// target regardless of how far past the screen it is scaled.
+    static func cloudNearLayout(screenSize: CGSize) -> (size: CGSize, top: CGFloat) {
+        let width = screenSize.width * cloudNearWidthMultiple
+        let height = width / cloudAspect
+        let top = screenSize.height * cloudNearSilhouetteY - height * cloudSilhouetteStart
+        return (CGSize(width: width, height: height), top)
     }
 
     // MARK: - Glow behind the phone

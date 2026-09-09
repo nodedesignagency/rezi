@@ -50,8 +50,12 @@ struct OnboardingView: View {
 
     // MARK: - Hero
 
-    /// Phone and cards, sized off the screen width and positioned off its
-    /// height, so the composition holds its proportions on any device.
+    /// Phone, clouds and cards, sized off the screen width and positioned off
+    /// its height so the composition holds its proportions on any device.
+    ///
+    /// The order matters and matches Figma: the clouds are drawn *after* the
+    /// device, so the phone sinks into them instead of sitting on top with a
+    /// hard rectangular edge. The cards go last, above everything.
     private func hero(in size: CGSize) -> some View {
         let scale = Metrics.heroScale(for: size.width)
         let vScale = size.height / Metrics.designHeight
@@ -64,6 +68,8 @@ struct OnboardingView: View {
                 )
                 .offset(y: Metrics.phoneTop * vScale)
                 .entrance(appeared, delay: Motion.Beat.phone, offsetY: 44, startScale: 0.94)
+
+            CloudLayer(appeared: appeared, size: size)
 
             JobCardStack(model: model, appeared: appeared)
                 .scaleEffect(scale, anchor: .top)

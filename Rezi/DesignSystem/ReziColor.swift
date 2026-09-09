@@ -18,14 +18,29 @@ enum ReziColor {
 
     // MARK: Sky
 
-    /// Deep blue in the top-left corner of the gradient.
-    static let skyDeep = Color(hex: 0x1B3AC6)
-    /// Brighter blue across the top edge.
-    static let skyBlue = Color(hex: 0x2B4BD4)
-    /// The blue → purple hand-off, roughly two thirds down.
-    static let skyIndigo = Color(hex: 0x5B49D6)
-    /// Purple in the bottom-right corner.
-    static let skyPurple = Color(hex: 0x8B44CE)
+    /// The sky as a 3 x 4 mesh, read off the reference gradient: deep blue in
+    /// the top-left, vivid blue across the top-right, softening through
+    /// indigo and violet, into magenta along the bottom.
+    ///
+    /// Row order is top to bottom, each row left to right. Change these and
+    /// the whole sky changes — nothing else references sky colours.
+    static let skyMesh: [Color] = [
+        // top
+        Color(hex: 0x2B3E96), Color(hex: 0x2148C4), Color(hex: 0x1E52DE),
+        // upper middle
+        Color(hex: 0x34409A), Color(hex: 0x3E46B4), Color(hex: 0x5A4CC6),
+        // lower middle
+        Color(hex: 0x45419E), Color(hex: 0x6B4AB4), Color(hex: 0x8B4FBE),
+        // bottom
+        Color(hex: 0x56409C), Color(hex: 0xB14E9E), Color(hex: 0x9A4BAE)
+    ]
+
+    /// Corner colours for the pre-iOS-18 fallback, taken from the mesh.
+    static let skyDeep = Color(hex: 0x2B3E96)
+    static let skyBlue = Color(hex: 0x1E52DE)
+    static let skyIndigo = Color(hex: 0x5A4CC6)
+    static let skyPurple = Color(hex: 0x9A4BAE)
+    static let skyMagenta = Color(hex: 0xB14E9E)
 
     /// Everything below the sky.
     static let page = Color.white

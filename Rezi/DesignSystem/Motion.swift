@@ -20,6 +20,7 @@ enum Motion {
     enum Beat {
         static let sky: Double = 0.00
         static let glow: Double = 0.05
+        static let clouds: Double = 0.08
         static let phone: Double = 0.10
         static let cards: Double = 0.24
         /// Added per card, so the stack deals itself out.
@@ -68,10 +69,16 @@ enum Motion {
 
     // MARK: - Ambient
 
-    /// Seconds for one full loop of each cloud layer. Different speeds give
-    /// the parallax; both are long enough to read as drift, not motion.
-    static let cloudNearDuration: Double = 48
-    static let cloudFarDuration: Double = 86
+    /// Seconds for one full loop of each cloud layer.
+    ///
+    /// These are set from drift *speed*, not from taste: the near bank is
+    /// scaled to twice the screen width and mirror-tiled, so one loop covers
+    /// roughly 1650pt — at the old 48s that crossed the screen in eleven
+    /// seconds, which reads as sliding rather than drifting. ~7pt/s for the
+    /// near layer and ~3pt/s for the far one gives the parallax without
+    /// either layer ever looking like it is moving.
+    static let cloudNearDuration: Double = 236
+    static let cloudFarDuration: Double = 131
 
     static let glowBreath = Animation.easeInOut(duration: 5).repeatForever(autoreverses: true)
     static let buttonShineDuration: Double = 3.4
