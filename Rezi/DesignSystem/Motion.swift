@@ -74,9 +74,9 @@ enum Motion {
     /// Gap between automatic swipes. Long enough that a card is fully at rest
     /// before the next one goes, so the deck reads as one card at a time
     /// rather than a queue being flushed.
-    static let autoplayInterval: Duration = .seconds(1.9)
+    static let autoplayInterval: Duration = .seconds(1.4)
     /// Longer first gap, so the entrance finishes before the deck starts moving.
-    static let autoplayFirstInterval: Duration = .seconds(2.4)
+    static let autoplayFirstInterval: Duration = .seconds(1.8)
 
     // MARK: - Gauge
 
