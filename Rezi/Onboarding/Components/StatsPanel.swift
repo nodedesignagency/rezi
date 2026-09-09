@@ -120,11 +120,10 @@ struct StatsPanel: View {
                     .frame(maxWidth: .infinity)
             }
         }
+        // No fill of its own. Figma has this row's fill and its glass effect
+        // both switched off — the panel's colour is meant to show straight
+        // through. Drawing one put a second rounded shape inside the card.
         .frame(height: Metrics.statsHeight)
-        .background(
-            RoundedRectangle(cornerRadius: Metrics.statsCornerRadius, style: .continuous)
-                .fill(ReziColor.statsSurface.opacity(ReziColor.statsSurfaceOpacity))
-        )
     }
 
     /// A hairline that fades out at both ends rather than stopping flat.

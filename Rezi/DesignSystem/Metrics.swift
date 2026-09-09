@@ -95,9 +95,6 @@ enum Metrics {
     static let panelBottomRadius: CGFloat = 30
 
     static let statsHeight: CGFloat = 76
-    /// Figma reads 60, which Figma itself clamps to half the height.
-    static let statsCornerRadius: CGFloat = 38
-
     static let statsDividerHeight: CGFloat = 42
     static let statsDividerWidth: CGFloat = 1
     /// The divider is a black gradient that fades out at both ends, the whole
@@ -117,7 +114,6 @@ enum Metrics {
     /// washed-out wisp. Narrower compresses that ramp back into the band where
     /// the cloud is actually meant to be seen.
     static let cloudBandWidthRatio: CGFloat = 2.8
-    static let cloudBandLeftRatio: CGFloat = -0.9
     /// Taken from the export rather than the Figma frame, so the artwork is
     /// never stretched. Update if the cloud is re-exported at a different crop.
     static let cloudBandAspect: CGFloat = 3980.0 / 1681.0
@@ -136,9 +132,8 @@ enum Metrics {
     static let cloudSilhouetteY: CGFloat = 0.43
     static let cloudFarSilhouetteY: CGFloat = 0.39
 
-    /// How far the band slides each way, as a fraction of screen width. It is
-    /// wide enough that it never runs out at this amplitude, so the drift
-    /// needs no tiling and can never show a seam.
+    /// How far the band would like to slide each way, as a fraction of screen
+    /// width. `cloudDrift` clamps it to what the band can actually afford.
     static let cloudDriftTravel: CGFloat = 0.55
 
     /// The artwork peaks at 94% alpha and ramps very gradually, so a single
@@ -148,13 +143,29 @@ enum Metrics {
     static let cloudDensity: Int = 3
 
     /// A second, smaller copy drawn behind for parallax.
-    static let cloudFarScale: CGFloat = 0.7
+    static let cloudFarScale: CGFloat = 0.78
     static let cloudFarOpacity: Double = 0.45
 
     /// The cloud dissolves to nothing across this band, so the content below
     /// sits on clean white instead of on cloud texture.
     static let cloudFadeStart: CGFloat = 0.62
     static let cloudFadeEnd: CGFloat = 0.82
+
+    /// Left edge of a band, centred on the screen.
+    static func cloudBandLeft(screenWidth: CGFloat, bandWidth: CGFloat) -> CGFloat {
+        (screenWidth - bandWidth) / 2
+    }
+
+    /// Drift amplitude, clamped to the overhang the band actually has.
+    ///
+    /// This is load-bearing. Hard-coding the travel let the smaller parallax
+    /// copy slide its own right edge into view — a clean vertical line down
+    /// the screen where the cloud simply stopped. Deriving the amplitude from
+    /// the band means no scale can ever drift itself off screen.
+    static func cloudDrift(screenWidth: CGFloat, bandWidth: CGFloat) -> CGFloat {
+        let overhang = max(0, (bandWidth - screenWidth) / 2)
+        return min(screenWidth * cloudDriftTravel, overhang)
+    }
 
     /// Top edge of a cloud band, placed so its wisps land on `silhouetteY`.
     static func cloudBandTop(
@@ -165,12 +176,18 @@ enum Metrics {
         screenSize.height * silhouetteY - bandHeight * cloudSilhouetteStart
     }
 
-    // MARK: - Glow behind the phone
+    // MARK: - White veil
 
-    /// Ellipse 7184: x -108, y 370, 578 × 250.
-    static let glowWidth: CGFloat = 578
-    static let glowHeight: CGFloat = 250
-    static let glowCenterY: CGFloat = 495
+    /// Ellipse 7184: 578 x 250 at x -108, y 370, filled solid white with a
+    /// 50pt layer blur. Not a glow — it is what dissolves the bottom of the
+    /// phone and the sky into the white page, so no device outline shows
+    /// through behind the copy.
+    static let veilWidth: CGFloat = 578
+    static let veilHeight: CGFloat = 250
+    static let veilBlur: CGFloat = 50
+    /// Centre, from the Figma frame: x -108 + 578/2, y 370 + 250/2.
+    static let veilCenterXRatio: CGFloat = 181.0 / 393.0
+    static let veilCenterYRatio: CGFloat = 495.0 / 852.0
 
     // MARK: - Swipe
 

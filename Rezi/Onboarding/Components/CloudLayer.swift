@@ -72,7 +72,7 @@ struct CloudLayer: View {
     ) -> some View {
         let width = size.width * Metrics.cloudBandWidthRatio * scale
         let height = width / Metrics.cloudBandAspect
-        let left = size.width * Metrics.cloudBandLeftRatio * scale
+        let left = Metrics.cloudBandLeft(screenWidth: size.width, bandWidth: width)
         let top = Metrics.cloudBandTop(
             screenSize: size,
             bandHeight: height,
@@ -83,7 +83,7 @@ struct CloudLayer: View {
             imageName: Artwork.Name.clouds,
             width: width,
             height: height,
-            travel: size.width * Metrics.cloudDriftTravel,
+            travel: Metrics.cloudDrift(screenWidth: size.width, bandWidth: width),
             duration: duration
         )
         .opacity(opacity)

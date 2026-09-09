@@ -19,7 +19,6 @@ enum Motion {
     /// When each element starts, in seconds after the screen appears.
     enum Beat {
         static let sky: Double = 0.00
-        static let glow: Double = 0.05
         static let clouds: Double = 0.08
         static let phone: Double = 0.10
         static let cards: Double = 0.24

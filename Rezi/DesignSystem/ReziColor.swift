@@ -85,12 +85,6 @@ enum ReziColor {
 
     /// The card wrapping both the stats row and the button.
     static let panelSurface = Color(hex: 0xF2F4F8)
-    /// The stats row's own fill, sitting on the panel at 60%. Almost the same
-    /// colour as the panel, so it reads as a barely-there inset rather than a
-    /// second card.
-    static let statsSurface = Color(hex: 0xE9EDF4)
-    static let statsSurfaceOpacity: Double = 0.6
-
     static let statValue = Color.black
     static let statLabel = Color.black
 

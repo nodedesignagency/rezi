@@ -1,14 +1,12 @@
 import SwiftUI
 
-/// The white page, the gradient sky, and the glow behind the phone.
+/// The white page and the gradient sky.
 ///
-/// Everything here sits *behind* the device. The clouds are a separate layer
-/// drawn in front of it — see `CloudLayer`.
+/// Both sit *behind* the device. The clouds, and the white veil that dissolves
+/// the phone into the page, are separate layers drawn in front of it — see
+/// `CloudLayer` and `WhiteVeil`.
 struct SkyBackground: View {
     var appeared: Bool
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var breathing = false
 
     private var hasBackgroundImage: Bool { Artwork.has(Artwork.Name.background) }
 
@@ -36,7 +34,6 @@ struct SkyBackground: View {
                     }
                     .entrance(appeared, delay: Motion.Beat.sky, offsetY: 0, startScale: 1.05)
 
-                glow(in: size)
             }
             .frame(width: size.width, height: size.height, alignment: .top)
         }
@@ -57,38 +54,4 @@ struct SkyBackground: View {
         }
     }
 
-    // MARK: - Glow
-
-    /// Wide soft ellipse behind the base of the phone, breathing slowly so the
-    /// sky is never completely still even where the gradient is subtle.
-    private func glow(in size: CGSize) -> some View {
-        let vScale = size.height / Metrics.designHeight
-        let hScale = size.width / Metrics.designWidth
-
-        return Ellipse()
-            .fill(
-                RadialGradient(
-                    colors: [
-                        Color.white.opacity(0.85),
-                        Color.white.opacity(0.35),
-                        Color.white.opacity(0)
-                    ],
-                    center: .center,
-                    startRadius: 0,
-                    endRadius: Metrics.glowWidth * hScale * 0.5
-                )
-            )
-            .frame(
-                width: Metrics.glowWidth * hScale,
-                height: Metrics.glowHeight * vScale
-            )
-            .blur(radius: 26)
-            .scaleEffect(breathing ? 1.06 : 0.95)
-            .position(x: size.width / 2, y: Metrics.glowCenterY * vScale)
-            .entrance(appeared, delay: Motion.Beat.glow, offsetY: 0)
-            .onAppear {
-                guard !reduceMotion else { return }
-                withAnimation(Motion.glowBreath) { breathing = true }
-            }
-    }
 }
