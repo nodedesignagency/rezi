@@ -11,12 +11,15 @@ enum Metrics {
     /// How much of the screen height the sky covers before it dissolves into
     /// the clouds.
     ///
-    /// Deliberately shorter than the 690-of-852 background image in Figma: the
-    /// gradient's full blue → violet → magenta range has to resolve inside the
-    /// band that is actually visible above the cloud line, not below it.
-    static let skyHeightRatio: CGFloat = 0.52
+    /// Figma keeps blue visible down the left and right margins to roughly
+    /// two thirds of the screen — the middle only looks white because the
+    /// phone body covers it. Cutting the sky short made the gradient a thin
+    /// strip at the top, where the mesh's pinned top row barely moves, which
+    /// is most of why the animation could not be seen.
+    static let skyHeightRatio: CGFloat = 0.74
+
     /// Where the sky starts fading out, as a fraction of its own height.
-    static let skyFadeStart: CGFloat = 0.70
+    static let skyFadeStart: CGFloat = 0.74
 
     // MARK: - Hero (phone + card stack)
 
@@ -106,27 +109,46 @@ enum Metrics {
 
     // MARK: - Clouds
 
-    /// The cloud band is placed exactly where Figma puts it: a 1990 x 828
-    /// frame at x -798, y 42 in the 393 x 852 artboard. That means it is five
-    /// screens wide and only a fifth of it is ever visible — which is the
-    /// whole reason the design's clouds read soft. You never see a complete
-    /// puff, just a slice of a very large one.
+    /// The band is five screens wide, so only a fifth is ever visible — which
+    /// is why the design's clouds read soft. You see a slice of one very large
+    /// puff, never a whole one at artwork scale.
     static let cloudBandWidthRatio: CGFloat = 1990.0 / 393.0
     static let cloudBandLeftRatio: CGFloat = -798.0 / 393.0
-    static let cloudBandTopRatio: CGFloat = 42.0 / 852.0
-    /// Taken from the export rather than the frame, so the artwork is never
-    /// stretched. Update if the cloud is re-exported at a different crop.
+    /// Taken from the export rather than the Figma frame, so the artwork is
+    /// never stretched. Update if the cloud is re-exported at a different crop.
     static let cloudBandAspect: CGFloat = 3980.0 / 1681.0
 
-    /// How far the band slides each way, as a fraction of screen width. The
-    /// band is wide enough that it never runs out at these amplitudes, so the
-    /// drift needs no tiling and can never show a seam.
+    /// Measured off the export: its wisps become visible a quarter of the way
+    /// down. The band is positioned from this rather than from its top edge,
+    /// so re-exporting at a different crop only needs this number changed.
+    static let cloudSilhouetteStart: CGFloat = 0.255
+
+    /// Where those wisps should land, as a fraction of screen height.
+    static let cloudSilhouetteY: CGFloat = 0.54
+    static let cloudFarSilhouetteY: CGFloat = 0.50
+
+    /// How far the band slides each way, as a fraction of screen width. It is
+    /// wide enough that it never runs out at this amplitude, so the drift
+    /// needs no tiling and can never show a seam.
     static let cloudDriftTravel: CGFloat = 0.9
 
     /// A second, smaller copy drawn behind for parallax.
     static let cloudFarScale: CGFloat = 0.7
-    static let cloudFarTopRatio: CGFloat = -0.02
     static let cloudFarOpacity: Double = 0.45
+
+    /// The cloud dissolves to nothing across this band, so the content below
+    /// sits on clean white instead of on cloud texture.
+    static let cloudFadeStart: CGFloat = 0.64
+    static let cloudFadeEnd: CGFloat = 0.80
+
+    /// Top edge of a cloud band, placed so its wisps land on `silhouetteY`.
+    static func cloudBandTop(
+        screenSize: CGSize,
+        bandHeight: CGFloat,
+        silhouetteY: CGFloat
+    ) -> CGFloat {
+        screenSize.height * silhouetteY - bandHeight * cloudSilhouetteStart
+    }
 
     // MARK: - Glow behind the phone
 

@@ -22,14 +22,14 @@ struct CloudLayer: View {
                 // Behind: smaller and dimmer, so it sits further away.
                 band(
                     scale: Metrics.cloudFarScale,
-                    topRatio: Metrics.cloudFarTopRatio,
+                    silhouetteY: Metrics.cloudFarSilhouetteY,
                     opacity: Metrics.cloudFarOpacity,
                     duration: Motion.cloudFarDuration
                 )
 
                 band(
                     scale: 1,
-                    topRatio: Metrics.cloudBandTopRatio,
+                    silhouetteY: Metrics.cloudSilhouetteY,
                     opacity: 1,
                     duration: Motion.cloudNearDuration
                 )
@@ -38,20 +38,42 @@ struct CloudLayer: View {
             }
         }
         .frame(width: size.width, height: size.height, alignment: .topLeading)
+        // Dissolve the bank to nothing before it reaches the copy. The page
+        // behind is white, so the cloud melts into it rather than leaving
+        // texture under the headline, stats and button.
+        .mask {
+            LinearGradient(
+                stops: [
+                    .init(color: .white, location: 0),
+                    .init(color: .white, location: Metrics.cloudFadeStart),
+                    .init(color: .clear, location: Metrics.cloudFadeEnd),
+                    .init(color: .clear, location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
         .allowsHitTesting(false)
         .entrance(appeared, delay: Motion.Beat.clouds, offsetY: 0)
     }
 
-    /// One copy of the band, positioned by ratio off the artboard.
+    /// One copy of the band, positioned so its wisps land on `silhouetteY`
+    /// rather than by its own top edge — the artwork's top quarter is empty,
+    /// so placing it by the frame put the clouds far too high.
     private func band(
         scale: CGFloat,
-        topRatio: CGFloat,
+        silhouetteY: CGFloat,
         opacity: Double,
         duration: Double
     ) -> some View {
         let width = size.width * Metrics.cloudBandWidthRatio * scale
         let height = width / Metrics.cloudBandAspect
         let left = size.width * Metrics.cloudBandLeftRatio * scale
+        let top = Metrics.cloudBandTop(
+            screenSize: size,
+            bandHeight: height,
+            silhouetteY: silhouetteY
+        )
 
         return DriftingBand(
             imageName: Artwork.Name.clouds,
@@ -61,7 +83,7 @@ struct CloudLayer: View {
             duration: duration
         )
         .opacity(opacity)
-        .offset(x: left, y: size.height * topRatio)
+        .offset(x: left, y: top)
     }
 
     /// Stand-in when no cloud artwork is present.
@@ -70,11 +92,11 @@ struct CloudLayer: View {
             DriftingBlobClouds(band: .far, loopDuration: Motion.cloudFarDuration)
                 .frame(width: size.width, height: size.height * 0.30)
                 .opacity(Metrics.cloudFarOpacity)
-                .offset(y: size.height * 0.34)
+                .offset(y: size.height * Metrics.cloudFarSilhouetteY)
 
             DriftingBlobClouds(band: .near, loopDuration: Motion.cloudNearDuration)
                 .frame(width: size.width, height: size.height * 0.38)
-                .offset(y: size.height * 0.40)
+                .offset(y: size.height * Metrics.cloudSilhouetteY)
         }
     }
 }

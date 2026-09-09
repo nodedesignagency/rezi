@@ -4,13 +4,18 @@ import SwiftUI
 /// The gradient sky, in motion.
 ///
 /// Two things move, and both are needed. The `MeshGradient`'s control points
-/// wander, which reshapes the colour regions; and a pair of soft lights drift
+/// wander, which reshapes the colour regions; and three soft lights drift
 /// across on their own paths, which is what actually makes the motion legible.
-/// The mesh alone shifts large areas of similar blue, and the eye barely
-/// registers that — the travelling lights give it something to track.
+/// A mesh shifting large areas of similar blue is genuinely hard to perceive —
+/// a travelling highlight gives the eye something to track.
 ///
-/// Every path is built from sine waves on mutually-prime periods, so the sky
-/// never repeats an arrangement and never snaps back to a start.
+/// The control rows are deliberately weighted towards the top of the frame.
+/// Only the upper part of the sky is ever visible: below that the clouds take
+/// over. Spacing the rows evenly put nearly all the movement underneath them,
+/// leaving the visible strip pinned and apparently static.
+///
+/// Every path is a sine wave, and no two share a period, so the sky never
+/// repeats an arrangement and never snaps back to a start.
 ///
 /// Below iOS 18 the mesh falls back to layered gradients; the lights still
 /// drift, so the screen is alive on either path.
@@ -18,7 +23,7 @@ struct AnimatedSky: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { context in
+        TimelineView(.animation(minimumInterval: nil, paused: reduceMotion)) { context in
             // Frozen at the base layout when Reduce Motion is on.
             let time = reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate
 
@@ -60,32 +65,32 @@ struct AnimatedSky: View {
     ///
     /// Edge points keep their edge coordinate so the mesh cannot tear away
     /// from the frame; they slide *along* the edge instead. Interior points
-    /// move freely, and by a lot — a mesh this size needs travel measured in
-    /// tenths of the frame before the movement reads at all.
+    /// move freely, and by a lot — travel has to be measured in tenths of the
+    /// frame before movement in a gradient this soft reads at all.
     private static func meshPoints(at time: Double) -> [SIMD2<Float>] {
         func drift(_ speed: Double, _ phase: Double, _ amount: Double) -> Float {
             Float(sin(time * speed + phase) * amount)
         }
 
         return [
-            // Top edge — y pinned.
+            // Top edge — y pinned, so it slides sideways only.
             SIMD2<Float>(0, 0),
-            SIMD2<Float>(0.5 + drift(0.43, 0.0, 0.22), 0),
+            SIMD2<Float>(0.5 + drift(0.62, 0.0, 0.30), 0),
             SIMD2<Float>(1, 0),
 
-            // Upper middle.
-            SIMD2<Float>(0, 0.30 + drift(0.37, 1.1, 0.10)),
-            SIMD2<Float>(0.5 + drift(0.53, 2.0, 0.26), 0.32 + drift(0.47, 0.4, 0.13)),
-            SIMD2<Float>(1, 0.30 + drift(0.31, 3.2, 0.10)),
+            // High up, where the sky is actually visible.
+            SIMD2<Float>(0, 0.20 + drift(0.55, 1.1, 0.09)),
+            SIMD2<Float>(0.5 + drift(0.78, 2.0, 0.32), 0.20 + drift(0.67, 0.4, 0.11)),
+            SIMD2<Float>(1, 0.20 + drift(0.49, 3.2, 0.09)),
 
-            // Lower middle.
-            SIMD2<Float>(0, 0.66 + drift(0.29, 2.4, 0.10)),
-            SIMD2<Float>(0.5 + drift(0.61, 4.1, 0.26), 0.68 + drift(0.41, 1.7, 0.13)),
-            SIMD2<Float>(1, 0.66 + drift(0.34, 0.9, 0.10)),
+            // Around the cloud line.
+            SIMD2<Float>(0, 0.52 + drift(0.44, 2.4, 0.11)),
+            SIMD2<Float>(0.5 + drift(0.86, 4.1, 0.32), 0.52 + drift(0.59, 1.7, 0.14)),
+            SIMD2<Float>(1, 0.52 + drift(0.51, 0.9, 0.11)),
 
             // Bottom edge — y pinned.
             SIMD2<Float>(0, 1),
-            SIMD2<Float>(0.5 + drift(0.39, 5.0, 0.22), 1),
+            SIMD2<Float>(0.5 + drift(0.71, 5.0, 0.30), 1),
             SIMD2<Float>(1, 1)
         ]
     }
@@ -109,24 +114,34 @@ struct AnimatedSky: View {
         let intensity: Double
     }
 
+    /// Two cool, one warm, all in the upper half where the sky shows.
     private static let lightSources: [Light] = [
         Light(
             color: ReziColor.skyLightCool,
-            originX: 0.68, originY: 0.24,
-            spreadX: 0.30, spreadY: 0.20,
-            speedX: 0.23, speedY: 0.31,
+            originX: 0.70, originY: 0.16,
+            spreadX: 0.38, spreadY: 0.16,
+            speedX: 0.42, speedY: 0.58,
             phaseX: 0.0, phaseY: 1.6,
-            radius: 0.62,
-            intensity: 0.55
+            radius: 0.58,
+            intensity: 0.60
         ),
         Light(
             color: ReziColor.skyLightWarm,
-            originX: 0.32, originY: 0.66,
-            spreadX: 0.34, spreadY: 0.24,
-            speedX: 0.19, speedY: 0.27,
+            originX: 0.30, originY: 0.44,
+            spreadX: 0.42, spreadY: 0.20,
+            speedX: 0.35, speedY: 0.47,
             phaseX: 2.4, phaseY: 0.7,
-            radius: 0.58,
-            intensity: 0.45
+            radius: 0.62,
+            intensity: 0.50
+        ),
+        Light(
+            color: ReziColor.skyLightCool,
+            originX: 0.45, originY: 0.30,
+            spreadX: 0.34, spreadY: 0.22,
+            speedX: 0.53, speedY: 0.39,
+            phaseX: 4.1, phaseY: 3.3,
+            radius: 0.46,
+            intensity: 0.42
         )
     ]
 
@@ -164,7 +179,7 @@ struct AnimatedSky: View {
                 }
             }
         }
-        // Adds light rather than painting over, so the base colours stay.
+        // Adds light rather than painting over, so the base colours survive.
         .blendMode(.plusLighter)
     }
 }
