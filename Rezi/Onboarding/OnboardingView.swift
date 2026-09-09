@@ -99,6 +99,7 @@ struct OnboardingView: View {
                 .foregroundStyle(ReziColor.headline)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: Metrics.copyWidth)
                 .entrance(appeared, delay: Motion.Beat.headline, offsetY: 20, startBlur: 4)
 
             gap(Metrics.headlineToSubhead)
@@ -110,6 +111,7 @@ struct OnboardingView: View {
                 .foregroundStyle(ReziColor.subhead)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: Metrics.copyWidth)
                 .entrance(appeared, delay: Motion.Beat.subhead, offsetY: 18)
 
             gap(Metrics.subheadToStats)

@@ -64,7 +64,6 @@ enum ReziColor {
     static let cardSurface = Color.white
     static let cardTitle = Color.black
     static let cardMeta = Color(hex: 0x5A5A5A)
-    static let cardDivider = Color(hex: 0xD8D8E0)
 
     // MARK: Score gauge
 
@@ -83,9 +82,7 @@ enum ReziColor {
     // MARK: Copy
 
     static let headline = Color.black
-    /// Figma's inspector reads 000000, but solid black at 14pt sits far too
-    /// heavy next to the headline — the design's own render shows it grey.
-    static let subhead = Color(hex: 0x64646E)
+    static let subhead = Color.black
 
     // MARK: Stats panel
 

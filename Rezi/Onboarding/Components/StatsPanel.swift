@@ -113,7 +113,7 @@ struct StatsPanel: View {
                 let stat = stats[index]
 
                 if index > 0 {
-                    divider
+                    FadedDivider(height: Metrics.statsDividerHeight)
                 }
 
                 column(stat, index: index)
@@ -124,24 +124,6 @@ struct StatsPanel: View {
         // both switched off — the panel's colour is meant to show straight
         // through. Drawing one put a second rounded shape inside the card.
         .frame(height: Metrics.statsHeight)
-    }
-
-    /// A hairline that fades out at both ends rather than stopping flat.
-    private var divider: some View {
-        Rectangle()
-            .fill(
-                LinearGradient(
-                    stops: [
-                        .init(color: .black.opacity(0), location: 0),
-                        .init(color: .black, location: 0.5),
-                        .init(color: .black.opacity(0), location: 1)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-            .frame(width: Metrics.statsDividerWidth, height: Metrics.statsDividerHeight)
-            .opacity(Metrics.statsDividerOpacity)
     }
 
     private func column(_ stat: OnboardingStat, index: Int) -> some View {

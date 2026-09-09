@@ -21,9 +21,7 @@ struct JobCardView: View {
 
                 HStack(spacing: 6) {
                     Text(job.salary)
-                    Rectangle()
-                        .fill(ReziColor.cardDivider)
-                        .frame(width: 1, height: Metrics.cardMetaDividerHeight)
+                    FadedDivider(height: Metrics.cardMetaDividerHeight)
                     Text(job.location)
                 }
                 .font(ReziFont.cardMeta)

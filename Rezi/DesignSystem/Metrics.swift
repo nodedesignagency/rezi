@@ -68,7 +68,7 @@ enum Metrics {
     /// Figma stacks the two lines into a 36pt block. At 16pt over 10pt that
     /// leaves ~5 between the line boxes.
     static let cardTitleToMeta: CGFloat = 5
-    static let cardMetaDividerHeight: CGFloat = 10
+    static let cardMetaDividerHeight: CGFloat = 12
 
     /// Gauge arc: 62.77 across in Figma, drawn inside a 98pt-wide slot.
     static let gaugeDiameter: CGFloat = 62.77
@@ -91,6 +91,11 @@ enum Metrics {
 
     /// The content column is 353 wide at x 20 in the 393 frame.
     static let contentHorizontalPadding: CGFloat = 20
+
+    /// The headline and body sit in a 311-wide box, not the full column.
+    /// Letting them fill 353 ran the body wider than the design and changed
+    /// where it wrapped.
+    static let copyWidth: CGFloat = 311
 
     static let appIconSize: CGFloat = 80
 
@@ -116,10 +121,10 @@ enum Metrics {
 
     static let statsHeight: CGFloat = 76
     static let statsDividerHeight: CGFloat = 42
-    static let statsDividerWidth: CGFloat = 1
-    /// The divider is a black gradient that fades out at both ends, the whole
-    /// path drawn at 10%.
-    static let statsDividerOpacity: Double = 0.10
+
+    /// Shared by every divider in the screen — see `FadedDivider`.
+    static let dividerWidth: CGFloat = 1
+    static let dividerOpacity: Double = 0.10
 
     static let buttonHeight: CGFloat = 52
     static let buttonCornerRadius: CGFloat = 26
