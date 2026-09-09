@@ -21,21 +21,21 @@ struct ScoreGauge: View {
     private var lineWidth: CGFloat { Metrics.gaugeLineWidth }
 
     var body: some View {
-        VStack(spacing: 1) {
-            ZStack(alignment: .bottom) {
-                arc
+        ZStack(alignment: .top) {
+            arc
+
+            VStack(spacing: Metrics.gaugeScoreToLabel) {
                 Text("\(score)")
                     .font(ReziFont.gaugeScore)
                     .foregroundStyle(ReziColor.gaugeScore)
-                    .offset(y: 2)
-            }
-            .frame(width: diameter, height: diameter / 2 + lineWidth / 2)
 
-            Text(label)
-                .font(ReziFont.gaugeLabel)
-                .foregroundStyle(color)
-                .offset(y: Metrics.gaugeLabelOffset)
+                Text(label)
+                    .font(ReziFont.gaugeLabel)
+                    .foregroundStyle(color)
+            }
+            .offset(y: Metrics.gaugeTextTop)
         }
+        .frame(width: diameter, height: Metrics.gaugeHeight, alignment: .top)
         .onAppear { sweep(animated: revealed) }
         .onChange(of: revealed) { _, isRevealed in
             if isRevealed { sweep(animated: true) }

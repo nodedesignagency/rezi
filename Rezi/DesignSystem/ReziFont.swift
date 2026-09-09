@@ -31,10 +31,10 @@ enum ReziFont {
     static let cardMetaTracking: CGFloat = -0.20
 
     // Score gauge. Both sit at 0% tracking.
-    static let gaugeScore = InterFont.font(size: 12, weight: .medium)
+    static let gaugeScore = InterFont.font(size: 13, weight: .medium)
     /// Figma reads Regular 8, which is legible at 583% zoom on a canvas and
     /// not on a phone. Kept at the larger size on purpose.
-    static let gaugeLabel = InterFont.font(size: 10, weight: .semibold)
+    static let gaugeLabel = InterFont.font(size: 11, weight: .semibold)
 
     // Stats — from Figma
     static let statValue = InterFont.font(size: 14, weight: .medium)

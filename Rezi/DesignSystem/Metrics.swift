@@ -75,8 +75,17 @@ enum Metrics {
     static let gaugeLineWidth: CGFloat = 7
     /// Outside stroke on the track, from Figma.
     static let gaugeTrackEdgeWidth: CGFloat = 0.92
-    /// Lifts the label towards the score, closing the gap under the arc.
-    static let gaugeLabelOffset: CGFloat = -3
+    /// The score and label are positioned as one block over the arc rather
+    /// than stacked under it, so their placement and their gap are two plain
+    /// numbers instead of three offsets working against each other.
+    ///
+    /// Overall height of the gauge, label included.
+    static let gaugeHeight: CGFloat = 46
+    /// Top of the text block, measured from the top of the arc.
+    static let gaugeTextTop: CGFloat = 12
+    /// Between the two lines. Negative because at these sizes the line boxes
+    /// are much taller than the glyphs; this is a ~5pt gap on screen.
+    static let gaugeScoreToLabel: CGFloat = -1
 
     // MARK: - Content column
 
