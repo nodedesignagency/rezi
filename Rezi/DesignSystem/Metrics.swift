@@ -32,7 +32,14 @@ enum Metrics {
     static let cardWidth: CGFloat = 353
     static let cardHeight: CGFloat = 76
     static let cardTop: CGFloat = 150
-    static let cardCornerRadius: CGFloat = 16
+    static let cardCornerRadius: CGFloat = 23.53
+    /// Inside stroke on the card.
+    static let cardBorderWidth: CGFloat = 2.35
+    /// Drop shadow: y 47.06, blur 50.88, #16192E at 5%. Figma's blur is
+    /// roughly twice SwiftUI's radius.
+    static let cardShadowY: CGFloat = 47.06
+    static let cardShadowRadius: CGFloat = 25.4
+    static let cardShadowOpacity: Double = 0.05
 
     /// Cards behind the front one step down 0.9× each and slide downward.
     /// Figma: 353 / 317.7 / 285.93 wide at y 150 / 191.8 / 230.
@@ -64,8 +71,10 @@ enum Metrics {
     static let cardMetaDividerHeight: CGFloat = 10
 
     /// Gauge arc: 62.77 across in Figma, drawn inside a 98pt-wide slot.
-    static let gaugeDiameter: CGFloat = 63
+    static let gaugeDiameter: CGFloat = 62.77
     static let gaugeLineWidth: CGFloat = 7
+    /// Outside stroke on the track, from Figma.
+    static let gaugeTrackEdgeWidth: CGFloat = 0.92
 
     // MARK: - Content column
 

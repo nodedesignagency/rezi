@@ -49,6 +49,12 @@ struct JobCardView: View {
             RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous)
                 .fill(ReziColor.cardSurface)
         )
+        // Inside stroke, per Figma — `strokeBorder` insets, `stroke` straddles.
+        .overlay(
+            RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous)
+                .strokeBorder(ReziColor.cardBorder, lineWidth: Metrics.cardBorderWidth)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "\(job.title), \(job.salary), \(job.location). Match score \(job.score), \(job.scoreLabel)."

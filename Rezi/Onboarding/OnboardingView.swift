@@ -95,6 +95,7 @@ struct OnboardingView: View {
             // lines the design calls for, at any text width.
             Text("Swipe right on\nyour next job.")
                 .font(ReziFont.headline)
+                .tracking(ReziFont.headlineTracking)
                 .foregroundStyle(ReziColor.headline)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -104,6 +105,8 @@ struct OnboardingView: View {
 
             Text("Every job scored against your resume. Skip the bad fits, apply to the rest in a tap.")
                 .font(ReziFont.subhead)
+                .tracking(ReziFont.subheadTracking)
+                .lineSpacing(ReziFont.subheadLineSpacing)
                 .foregroundStyle(ReziColor.subhead)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

@@ -51,6 +51,19 @@ struct ScoreGauge: View {
 
     private var arc: some View {
         ZStack {
+            // The track's outside stroke, drawn as a slightly fatter arc
+            // underneath: an outside stroke sits beyond the shape's edge, so
+            // widening the line by twice its weight reproduces it.
+            Circle()
+                .trim(from: 0.5, to: 1.0)
+                .stroke(
+                    ReziColor.gaugeTrackEdge,
+                    style: StrokeStyle(
+                        lineWidth: lineWidth + Metrics.gaugeTrackEdgeWidth * 2,
+                        lineCap: .round
+                    )
+                )
+
             // Track: the full top half.
             Circle()
                 .trim(from: 0.5, to: 1.0)

@@ -47,11 +47,13 @@ struct JobCardStack: View {
                 swipeOverlay
             }
         }
+        // Figma: y 47.06, blur 50.88, #16192E at 5% — a wide, soft shadow
+        // thrown well below the card rather than a tight one under it.
         .shadow(
-            color: Color(hex: 0x121A44).opacity(isFront ? 0.16 : 0.10),
-            radius: isFront ? 18 : 10,
+            color: Color(hex: 0x16192E).opacity(Metrics.cardShadowOpacity),
+            radius: Metrics.cardShadowRadius,
             x: 0,
-            y: isFront ? 10 : 6
+            y: Metrics.cardShadowY
         )
         .scaleEffect(Metrics.cardScale(depth: depth), anchor: .top)
         .rotationEffect(.degrees(isFront ? model.frontCardRotation : 0))

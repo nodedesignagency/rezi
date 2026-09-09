@@ -63,23 +63,29 @@ enum ReziColor {
 
     static let cardSurface = Color.white
     static let cardTitle = Color(hex: 0x101014)
+    static let cardBorder = Color(hex: 0xEDEDED)
     static let cardMeta = Color(hex: 0x8B8B93)
     static let cardDivider = Color(hex: 0xD8D8E0)
 
     // MARK: Score gauge
 
-    static let gaugeTrack = Color(hex: 0xE9E9EE)
+    static let gaugeTrack = Color(hex: 0xE2E4E9)
+    /// The track carries a 0.92 outside stroke, which reads as a soft lip
+    /// around it rather than an outline.
+    static let gaugeTrackEdge = Color(hex: 0xF2F2F2)
     /// 0–39
     static let scoreWeak = Color(hex: 0xE8604D)
     /// 40–69 — "Good"
-    static let scoreGood = Color(hex: 0xE8A33D)
+    static let scoreGood = Color(hex: 0xE0A150)
     /// 70+ — "Best"
-    static let scoreBest = Color(hex: 0x35C26B)
+    static let scoreBest = Color(hex: 0x38CD76)
 
     // MARK: Copy
 
-    static let headline = Color(hex: 0x08080A)
-    static let subhead = Color(hex: 0x64646E)
+    static let headline = Color.black
+    /// Figma sets this black, not grey — it only reads lighter because it is
+    /// 14pt against a 32pt headline.
+    static let subhead = Color.black
 
     // MARK: Stats panel
 

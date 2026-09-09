@@ -10,9 +10,18 @@ import SwiftUI
 /// font's advance widths.
 enum ReziFont {
 
-    // Hero copy
-    static let headline = InterFont.font(size: 32, weight: .bold)
-    static let subhead = InterFont.font(size: 15, weight: .regular)
+    // Hero copy — from Figma
+    static let headline = InterFont.font(size: 32, weight: .medium)
+    static let subhead = InterFont.font(size: 14, weight: .regular)
+
+    /// Both carry -2% letter spacing.
+    static let headlineTracking: CGFloat = -0.64
+    static let subheadTracking: CGFloat = -0.28
+
+    /// The subhead sets at 140% line height; the headline is on Auto, which
+    /// is already the system default. `lineSpacing` is measured on top of the
+    /// default line box, so this is the difference, not the whole value.
+    static let subheadLineSpacing: CGFloat = 2.7
 
     // Job card
     static let cardTitle = InterFont.font(size: 16, weight: .semibold)
