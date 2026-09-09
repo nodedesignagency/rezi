@@ -1,107 +1,170 @@
 import Foundation
 import SwiftUI
 
-/// The gradient sky, drifting.
+/// The gradient sky, in motion.
 ///
-/// On iOS 18 and up this is a real `MeshGradient` whose control points wander
-/// on slow, mutually-prime sine waves — the colours never repeat a pattern and
-/// never snap, they just keep moving. Edge points stay pinned to their edge so
-/// the mesh can't tear away from the frame; only their position along it and
-/// the interior points move.
+/// Two things move, and both are needed. The `MeshGradient`'s control points
+/// wander, which reshapes the colour regions; and a pair of soft lights drift
+/// across on their own paths, which is what actually makes the motion legible.
+/// The mesh alone shifts large areas of similar blue, and the eye barely
+/// registers that — the travelling lights give it something to track.
 ///
-/// Below iOS 18 it falls back to layered gradients using the same palette.
+/// Every path is built from sine waves on mutually-prime periods, so the sky
+/// never repeats an arrangement and never snaps back to a start.
+///
+/// Below iOS 18 the mesh falls back to layered gradients; the lights still
+/// drift, so the screen is alive on either path.
 struct AnimatedSky: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        if #available(iOS 18.0, *) {
-            meshSky
-        } else {
-            layeredSky
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { context in
+            // Frozen at the base layout when Reduce Motion is on.
+            let time = reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate
+
+            ZStack {
+                base(at: time)
+                lights(at: time)
+            }
+            .compositingGroup()
         }
     }
 
-    // MARK: - iOS 18+
+    // MARK: - Base
 
-    @available(iOS 18.0, *)
-    private var meshSky: some View {
-        // 30fps is plenty for something this slow, and halves the cost of
-        // redrawing. Reduce Motion freezes it on the base layout.
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { context in
-            let time = reduceMotion
-                ? 0
-                : context.date.timeIntervalSinceReferenceDate
-
+    @ViewBuilder
+    private func base(at time: Double) -> some View {
+        if #available(iOS 18.0, *) {
             MeshGradient(
                 width: 3,
                 height: 4,
                 points: Self.meshPoints(at: time),
                 colors: ReziColor.skyMesh
             )
+        } else {
+            LinearGradient(
+                stops: [
+                    .init(color: ReziColor.skyDeep, location: 0.00),
+                    .init(color: ReziColor.skyBlue, location: 0.26),
+                    .init(color: ReziColor.skyIndigo, location: 0.55),
+                    .init(color: ReziColor.skyPurple, location: 0.82),
+                    .init(color: ReziColor.skyMagenta, location: 1.00)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         }
     }
 
-    /// The 3 x 4 control grid. Corners and edges keep their edge coordinate;
-    /// everything else breathes.
+    /// The 3 x 4 control grid.
+    ///
+    /// Edge points keep their edge coordinate so the mesh cannot tear away
+    /// from the frame; they slide *along* the edge instead. Interior points
+    /// move freely, and by a lot — a mesh this size needs travel measured in
+    /// tenths of the frame before the movement reads at all.
     private static func meshPoints(at time: Double) -> [SIMD2<Float>] {
-        func drift(speed: Double, phase: Double, amount: Double) -> Float {
+        func drift(_ speed: Double, _ phase: Double, _ amount: Double) -> Float {
             Float(sin(time * speed + phase) * amount)
         }
 
         return [
-            // Top edge — y pinned to 0.
+            // Top edge — y pinned.
             SIMD2<Float>(0, 0),
-            SIMD2<Float>(0.5 + drift(speed: 0.21, phase: 0.0, amount: 0.10), 0),
+            SIMD2<Float>(0.5 + drift(0.43, 0.0, 0.22), 0),
             SIMD2<Float>(1, 0),
 
             // Upper middle.
-            SIMD2<Float>(0, 0.33 + drift(speed: 0.17, phase: 1.1, amount: 0.05)),
-            SIMD2<Float>(0.5 + drift(speed: 0.24, phase: 2.0, amount: 0.14),
-                         0.33 + drift(speed: 0.19, phase: 0.4, amount: 0.06)),
-            SIMD2<Float>(1, 0.33 + drift(speed: 0.15, phase: 3.2, amount: 0.05)),
+            SIMD2<Float>(0, 0.30 + drift(0.37, 1.1, 0.10)),
+            SIMD2<Float>(0.5 + drift(0.53, 2.0, 0.26), 0.32 + drift(0.47, 0.4, 0.13)),
+            SIMD2<Float>(1, 0.30 + drift(0.31, 3.2, 0.10)),
 
             // Lower middle.
-            SIMD2<Float>(0, 0.66 + drift(speed: 0.13, phase: 2.4, amount: 0.05)),
-            SIMD2<Float>(0.5 + drift(speed: 0.20, phase: 4.1, amount: 0.14),
-                         0.66 + drift(speed: 0.22, phase: 1.7, amount: 0.06)),
-            SIMD2<Float>(1, 0.66 + drift(speed: 0.18, phase: 0.9, amount: 0.05)),
+            SIMD2<Float>(0, 0.66 + drift(0.29, 2.4, 0.10)),
+            SIMD2<Float>(0.5 + drift(0.61, 4.1, 0.26), 0.68 + drift(0.41, 1.7, 0.13)),
+            SIMD2<Float>(1, 0.66 + drift(0.34, 0.9, 0.10)),
 
-            // Bottom edge — y pinned to 1.
+            // Bottom edge — y pinned.
             SIMD2<Float>(0, 1),
-            SIMD2<Float>(0.5 + drift(speed: 0.16, phase: 5.0, amount: 0.10), 1),
+            SIMD2<Float>(0.5 + drift(0.39, 5.0, 0.22), 1),
             SIMD2<Float>(1, 1)
         ]
     }
 
-    // MARK: - iOS 17
+    // MARK: - Drifting lights
 
-    private var layeredSky: some View {
-        LinearGradient(
-            stops: [
-                .init(color: ReziColor.skyDeep, location: 0.00),
-                .init(color: ReziColor.skyBlue, location: 0.26),
-                .init(color: ReziColor.skyIndigo, location: 0.58),
-                .init(color: ReziColor.skyPurple, location: 0.84),
-                .init(color: ReziColor.skyMagenta, location: 1.00)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+    private struct Light {
+        let color: Color
+        /// Centre of its path, in unit space.
+        let originX: CGFloat
+        let originY: CGFloat
+        /// How far it wanders either side of that centre.
+        let spreadX: CGFloat
+        let spreadY: CGFloat
+        let speedX: Double
+        let speedY: Double
+        let phaseX: Double
+        let phaseY: Double
+        /// Radius as a fraction of the larger screen edge.
+        let radius: CGFloat
+        let intensity: Double
+    }
+
+    private static let lightSources: [Light] = [
+        Light(
+            color: ReziColor.skyLightCool,
+            originX: 0.68, originY: 0.24,
+            spreadX: 0.30, spreadY: 0.20,
+            speedX: 0.23, speedY: 0.31,
+            phaseX: 0.0, phaseY: 1.6,
+            radius: 0.62,
+            intensity: 0.55
+        ),
+        Light(
+            color: ReziColor.skyLightWarm,
+            originX: 0.32, originY: 0.66,
+            spreadX: 0.34, spreadY: 0.24,
+            speedX: 0.19, speedY: 0.27,
+            phaseX: 2.4, phaseY: 0.7,
+            radius: 0.58,
+            intensity: 0.45
         )
-        .overlay {
-            RadialGradient(
-                colors: [ReziColor.skyBlue.opacity(0.7), .clear],
-                center: UnitPoint(x: 0.78, y: -0.05),
-                startRadius: 0,
-                endRadius: 420
-            )
+    ]
+
+    private func lights(at time: Double) -> some View {
+        GeometryReader { geo in
+            let size = geo.size
+            let span = max(size.width, size.height)
+
+            ZStack {
+                ForEach(Self.lightSources.indices, id: \.self) { index in
+                    let light = Self.lightSources[index]
+                    let radius = span * light.radius
+
+                    // Split out so each stays a simple expression — inline,
+                    // these are slow for the type checker to resolve.
+                    let swingX = CGFloat(sin(time * light.speedX + light.phaseX))
+                    let swingY = CGFloat(sin(time * light.speedY + light.phaseY))
+                    let x = size.width * (light.originX + swingX * light.spreadX)
+                    let y = size.height * (light.originY + swingY * light.spreadY)
+
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [
+                                    light.color.opacity(light.intensity),
+                                    light.color.opacity(0)
+                                ],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: radius
+                            )
+                        )
+                        .frame(width: radius * 2, height: radius * 2)
+                        .position(x: x, y: y)
+                }
+            }
         }
-        .overlay {
-            RadialGradient(
-                colors: [ReziColor.skyMagenta.opacity(0.55), .clear],
-                center: UnitPoint(x: 0.45, y: 1.05),
-                startRadius: 0,
-                endRadius: 360
-            )
-        }
+        // Adds light rather than painting over, so the base colours stay.
+        .blendMode(.plusLighter)
     }
 }

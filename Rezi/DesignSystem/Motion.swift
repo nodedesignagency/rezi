@@ -69,16 +69,14 @@ enum Motion {
 
     // MARK: - Ambient
 
-    /// Seconds for one full loop of each cloud layer.
+    /// Seconds for one sweep of each cloud layer.
     ///
-    /// These are set from drift *speed*, not from taste: the near bank is
-    /// scaled to twice the screen width and mirror-tiled, so one loop covers
-    /// roughly 1650pt — at the old 48s that crossed the screen in eleven
-    /// seconds, which reads as sliding rather than drifting. ~7pt/s for the
-    /// near layer and ~3pt/s for the far one gives the parallax without
-    /// either layer ever looking like it is moving.
-    static let cloudNearDuration: Double = 236
-    static let cloudFarDuration: Double = 131
+    /// The band slides back and forth rather than looping, which it can do
+    /// without ever showing a seam because it is five screens wide. Eased at
+    /// both ends so the turn is invisible; the two layers use different
+    /// periods so they drift in and out of phase instead of moving as one.
+    static let cloudNearDuration: Double = 110
+    static let cloudFarDuration: Double = 170
 
     static let glowBreath = Animation.easeInOut(duration: 5).repeatForever(autoreverses: true)
     static let buttonShineDuration: Double = 3.4

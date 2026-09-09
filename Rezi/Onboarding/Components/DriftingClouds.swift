@@ -1,53 +1,6 @@
 import SwiftUI
 
-// MARK: - Image clouds
-
-/// Drifts the supplied cloud artwork sideways, forever.
-///
-/// The artwork is a photographed cloud bank, so its left and right edges do
-/// not meet. Tiling it normally would show a seam every pass. Instead every
-/// other copy is mirrored — `A A' A A'` — which makes each join a reflection
-/// and therefore invisible. The true period is two tiles, so the loop
-/// translates by `2 × tileWidth` and lands exactly where it started.
-struct DriftingImageClouds: View {
-    var imageName: String
-    var tileWidth: CGFloat
-    var tileHeight: CGFloat
-    var loopDuration: Double
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var phase: CGFloat = 0
-
-    private let tileCount = 4
-
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(0..<tileCount, id: \.self) { index in
-                Image(imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: tileWidth, height: tileHeight)
-                    .scaleEffect(x: index.isMultiple(of: 2) ? 1 : -1, y: 1)
-            }
-        }
-        .frame(width: tileWidth * CGFloat(tileCount), height: tileHeight, alignment: .leading)
-        .offset(x: -phase * tileWidth * 2)
-        .onAppear(perform: startDrifting)
-        .allowsHitTesting(false)
-    }
-
-    private func startDrifting() {
-        // Clouds hold still when Reduce Motion is on.
-        guard !reduceMotion, phase == 0 else { return }
-        withAnimation(.linear(duration: loopDuration).repeatForever(autoreverses: false)) {
-            phase = 1
-        }
-    }
-}
-
-// MARK: - Drawn clouds
-
-/// The distant haze layer, and the stand-in when no cloud artwork is present.
+/// The stand-in when no cloud artwork is present.
 ///
 /// Blobs are inset from both edges of the band, so two copies laid side by
 /// side meet on empty pixels and the loop is seamless without mirroring.

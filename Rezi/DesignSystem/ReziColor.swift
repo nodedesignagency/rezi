@@ -22,27 +22,36 @@ enum ReziColor {
     /// the top-left, vivid blue across the top-right, softening through
     /// indigo and violet, into magenta along the bottom.
     ///
+    /// Neighbouring cells are deliberately far apart in value. Motion in a
+    /// gradient is only visible where the colours differ — a mesh of similar
+    /// blues can be swirling hard and still look like a flat wall.
+    ///
     /// Row order is top to bottom, each row left to right. Change these and
-    /// the whole sky changes — nothing else references sky colours.
+    /// the whole sky changes; nothing else references sky colours.
     static let skyMesh: [Color] = [
         // top
-        Color(hex: 0x2B3E96), Color(hex: 0x2148C4), Color(hex: 0x1E52DE),
+        Color(hex: 0x16308C), Color(hex: 0x2A54D6), Color(hex: 0x3F72F2),
         // upper middle
-        Color(hex: 0x34409A), Color(hex: 0x3E46B4), Color(hex: 0x5A4CC6),
+        Color(hex: 0x28399B), Color(hex: 0x3D5AD0), Color(hex: 0x5C7CF0),
         // lower middle
-        Color(hex: 0x45419E), Color(hex: 0x6B4AB4), Color(hex: 0x8B4FBE),
+        Color(hex: 0x43399E), Color(hex: 0x6B4AC0), Color(hex: 0x9055D6),
         // bottom
-        Color(hex: 0x56409C), Color(hex: 0xB14E9E), Color(hex: 0x9A4BAE)
+        Color(hex: 0x5B3F9C), Color(hex: 0xB44E9E), Color(hex: 0x9A4BB8)
     ]
 
-    /// Corner colours for the pre-iOS-18 fallback, taken from the mesh.
-    static let skyDeep = Color(hex: 0x2B3E96)
-    static let skyBlue = Color(hex: 0x1E52DE)
-    static let skyIndigo = Color(hex: 0x5A4CC6)
-    static let skyPurple = Color(hex: 0x9A4BAE)
-    static let skyMagenta = Color(hex: 0xB14E9E)
+    /// Soft lights that drift across the sky on their own paths, over the
+    /// mesh. These are what make the motion legible — the mesh alone moves
+    /// large areas of similar colour, which the eye barely registers.
+    static let skyLightCool = Color(hex: 0x5C8CFF)
+    static let skyLightWarm = Color(hex: 0xC0509E)
 
-    /// Everything below the sky.
+    /// Corner colours for the pre-iOS-18 fallback, taken from the mesh.
+    static let skyDeep = Color(hex: 0x16308C)
+    static let skyBlue = Color(hex: 0x3F72F2)
+    static let skyIndigo = Color(hex: 0x5C7CF0)
+    static let skyPurple = Color(hex: 0x9055D6)
+    static let skyMagenta = Color(hex: 0xB44E9E)
+
     static let page = Color.white
 
     // MARK: Cards
