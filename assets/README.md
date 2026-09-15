@@ -60,10 +60,18 @@ Still drawn rather than supplied, if you want to send them:
 - **`company-logo`** — the round mark on the job cards. Currently a neutral
   geometric placeholder, deliberately not any real company's logo.
 
-### Extra company logos (optional)
+### Company logos
 
-Drop in `company-logo-1.png`, `company-logo-2.png`, … and the card stack will
-cycle through them instead of repeating one mark.
+The deck carries five, `company-logo-1` … `company-logo-5`, and each card in
+`JobCard.samples` picks one by its `logoIndex`. Add a sixth and it is used the
+moment a card asks for index 5 — the lookup counts upwards until a number is
+missing, so they have to stay contiguous.
+
+`company-logo` with no number is the single fallback, used only when no
+numbered ones are present.
+
+Any shape works: the mark is clipped to a circle, and all five currently in
+the repo are already round so nothing is cut.
 
 ### App icon (optional)
 
