@@ -22,6 +22,17 @@ struct ReziApp: App {
 /// screen only, so tapping through lands on a placeholder rather than a
 /// half-invented sign-up flow.
 struct RootView: View {
+    /// Which onboarding the app opens on. Both are complete screens; set this
+    /// to `.cardStack` to see the first one again.
+    private static let design: OnboardingDesign = .marquee
+
+    private enum OnboardingDesign {
+        /// `OnboardingView`: one deck of cards over the sky and clouds.
+        case cardStack
+        /// `MarqueeOnboardingView`: the feed in four rows around the icon.
+        case marquee
+    }
+
     @State private var route: Route?
 
     enum Route: String, Identifiable {
@@ -38,10 +49,7 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            OnboardingView(
-                onGetStarted: { route = .getStarted },
-                onSignIn: { route = .signIn }
-            )
+            onboarding
 
             if let route {
                 PlaceholderScreen(title: route.title) { self.route = nil }
@@ -50,6 +58,22 @@ struct RootView: View {
             }
         }
         .animation(.spring(response: 0.45, dampingFraction: 0.86), value: route)
+    }
+
+    @ViewBuilder
+    private var onboarding: some View {
+        switch Self.design {
+        case .cardStack:
+            OnboardingView(
+                onGetStarted: { route = .getStarted },
+                onSignIn: { route = .signIn }
+            )
+        case .marquee:
+            MarqueeOnboardingView(
+                onGetStarted: { route = .getStarted },
+                onSignIn: { route = .signIn }
+            )
+        }
     }
 }
 

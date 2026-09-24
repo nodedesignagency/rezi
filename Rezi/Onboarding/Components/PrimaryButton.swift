@@ -6,6 +6,10 @@ import SwiftUI
 /// few seconds, and fires a haptic on tap.
 struct PrimaryButton: View {
     var title: String
+    /// The fill, and the fill while held. The first screen's blue unless a
+    /// screen passes its own.
+    var color: Color = ReziColor.accent
+    var pressedColor: Color = ReziColor.accentPressed
     var action: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -40,14 +44,14 @@ struct PrimaryButton: View {
         let shape = RoundedRectangle(cornerRadius: Metrics.buttonCornerRadius, style: .continuous)
 
         return shape
-            .fill(isPressed ? ReziColor.accentPressed : ReziColor.accent)
+            .fill(isPressed ? pressedColor : color)
             .overlay {
                 GeometryReader { geo in
                     shineBar(width: geo.size.width, height: geo.size.height)
                 }
             }
             .clipShape(shape)
-            .shadow(color: ReziColor.accent.opacity(0.30), radius: 12, x: 0, y: 6)
+            .shadow(color: color.opacity(0.30), radius: 12, x: 0, y: 6)
     }
 
     /// A slanted highlight that travels across the button. It spends most of

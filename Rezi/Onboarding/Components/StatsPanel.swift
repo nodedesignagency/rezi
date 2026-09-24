@@ -79,6 +79,9 @@ struct StatsPanel: View {
     var appeared: Bool
     var buttonTitle: String
     var buttonAction: () -> Void
+    /// Handed to the button, so each screen can carry its own accent.
+    var buttonColor: Color = ReziColor.accent
+    var buttonPressedColor: Color = ReziColor.accentPressed
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -88,8 +91,13 @@ struct StatsPanel: View {
         VStack(spacing: Metrics.panelGap) {
             statsRow
 
-            PrimaryButton(title: buttonTitle, action: buttonAction)
-                .entrance(appeared, delay: Motion.Beat.button, offsetY: 0, startScale: 0.94)
+            PrimaryButton(
+                title: buttonTitle,
+                color: buttonColor,
+                pressedColor: buttonPressedColor,
+                action: buttonAction
+            )
+            .entrance(appeared, delay: Motion.Beat.button, offsetY: 0, startScale: 0.94)
         }
         .padding(Metrics.panelPadding)
         .background(

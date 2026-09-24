@@ -19,6 +19,7 @@ IMAGESETS=(
   "phone-mockup:PhoneMockup"
   "rezi-icon:ReziIcon"
   "company-logo:CompanyLogo"
+  "marquee-gradient:MarqueeGradient"
 )
 
 # Vector icons: base name in assets/raw -> imageset name. These go in as a
