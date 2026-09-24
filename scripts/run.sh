@@ -70,21 +70,41 @@ if [ "$CLEAN" = "1" ]; then
   rm -rf "$DERIVED"
 fi
 
+# The full output goes to a log; only the lines worth reading are shown.
+LOG="$DERIVED/xcodebuild.log"
+mkdir -p "$DERIVED"
+
+# Returns xcodebuild's own status. It has to be read straight off the
+# pipeline: an `|| true` after it would overwrite the status with its own
+# success, and a failed build would go on to launch the previous one.
+build() {
+  xcodebuild \
+    -project "$PROJECT" \
+    -scheme "$SCHEME" \
+    -configuration Debug \
+    -destination "id=$UDID" \
+    -derivedDataPath "$DERIVED" \
+    CODE_SIGNING_ALLOWED=NO \
+    build 2>&1 \
+    | tee "$LOG" \
+    | grep -E "error:|warning:|BUILD |Compiling|Linking"
+  return "${PIPESTATUS[0]}"
+}
+
 step "Building $SCHEME"
-set +e
-xcodebuild \
-  -project "$PROJECT" \
-  -scheme "$SCHEME" \
-  -configuration Debug \
-  -destination "id=$UDID" \
-  -derivedDataPath "$DERIVED" \
-  CODE_SIGNING_ALLOWED=NO \
-  build \
-  | grep -E "error:|warning:|BUILD |Compiling|Linking" || true
-BUILD_STATUS=${PIPESTATUS[0]}
-set -e
-[ "$BUILD_STATUS" -eq 0 ] || die "build failed. Re-run without the filter to see everything:
-  xcodebuild -project $PROJECT -scheme $SCHEME -destination 'id=$UDID' -derivedDataPath build build"
+if ! build; then
+  # The marquee screen's ripple is a Metal shader. Recent Xcode ships without
+  # the compiler for those until it is downloaded once, so fetch it and retry.
+  if grep -q "missing Metal Toolchain" "$LOG"; then
+    step "Downloading Apple's Metal Toolchain ${dim}(one time only, takes a few minutes)${reset}"
+    xcodebuild -downloadComponent MetalToolchain \
+      || die "could not download the Metal Toolchain. In Xcode, open Settings > Components and install Metal Toolchain, then run this again."
+    step "Building $SCHEME"
+    build || die "build failed. The full log is in $LOG"
+  else
+    die "build failed. The full log is in $LOG"
+  fi
+fi
 
 APP="$DERIVED/Build/Products/Debug-iphonesimulator/$SCHEME.app"
 [ -d "$APP" ] || die "built, but $APP is missing"
@@ -102,5 +122,5 @@ step "Launching"
 xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
 
 echo
-echo "${green}Running.${reset} ${dim}Drag the job cards to swipe; they also cycle on their own.${reset}"
+echo "${green}Running.${reset} ${dim}Drag the cards; tap one on the marquee screen to apply.${reset}"
 echo

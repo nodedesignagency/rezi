@@ -34,7 +34,13 @@ cd rezi
 Or just open `Rezi.xcodeproj` in Xcode and hit **Cmd-R**.
 
 Requires **Xcode 16+** (iOS 17 deployment target). No packages, no CocoaPods,
-no SPM dependencies — it builds straight out of the box.
+no SPM dependencies.
+
+The marquee screen's ripple is a Metal shader, and recent Xcode versions leave
+out the Metal compiler until it is downloaded once. `run.sh` notices and
+fetches it for you the first time. Building from Xcode instead, install it
+from **Xcode › Settings › Components › Metal Toolchain**, or run
+`xcodebuild -downloadComponent MetalToolchain`.
 
 ---
 
