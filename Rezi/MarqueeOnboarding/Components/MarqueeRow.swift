@@ -70,18 +70,23 @@ struct MarqueeRow: View {
     private func card(_ job: JobCard, index: Int, offset: CGFloat) -> some View {
         // Distance along the loop, which lap of it this is, and where that
         // puts the card on screen: somewhere in -pitch ..< loop - pitch.
+        // A zero-width layout pass has no loop to divide by.
         let travelled = offset + CGFloat(index) * pitch + pitch
-        let lap = (travelled / loopLength).rounded(.down)
+        let lap = loopLength > 0 ? (travelled / loopLength).rounded(.down) : 0
         let x = travelled - lap * loopLength - pitch
 
+        // Scored once the gauge crosses the edge the row brings cards in
+        // from, and it stays scored for the rest of the lap. Testing both
+        // edges would re-sweep a card that is dragged back and forth across
+        // the far one while in plain view.
         let gaugeX = x + cardWidth * Metrics.Marquee.gaugeCenterRatio
-        let gaugeOnScreen = gaugeX > 0 && gaugeX < width
+        let gaugeHasEntered = direction == .right ? gaugeX > 0 : gaugeX < width
         let isApplied = appliedID == job.id
 
         return MarqueeCard(
             job: job,
             scale: cardScale,
-            revealed: appeared && gaugeOnScreen,
+            revealed: appeared && gaugeHasEntered,
             applied: isApplied
         )
         // A fresh card each lap, created off screen with an empty gauge, so it
@@ -140,10 +145,8 @@ struct MarqueeRow: View {
     // MARK: - Tap to apply
 
     private func apply(_ job: JobCard) {
-        let now = Date.timeIntervalSinceReferenceDate
-        // Catch the row so the stamped card holds still to be read. It picks
-        // back up on its own, on the same curve as after a fling.
-        track.release(at: track.position(at: now), velocity: 0, time: now)
+        // Stop the row dead, so the stamped card holds still to be read.
+        track.hold(at: track.position(at: Date.timeIntervalSinceReferenceDate))
 
         tapCount += 1
         let tap = tapCount
@@ -156,6 +159,13 @@ struct MarqueeRow: View {
             withAnimation(Motion.Marquee.applyOut) {
                 appliedID = nil
             }
+
+            // Then let it pick back up, on the same curve as after a fling.
+            // Unless a finger has taken the row since, or already thrown it:
+            // that motion is theirs to keep.
+            guard track.isHeld, grabOrigin == nil else { return }
+            let now = Date.timeIntervalSinceReferenceDate
+            track.release(at: track.position(at: now), velocity: 0, time: now)
         }
     }
 }

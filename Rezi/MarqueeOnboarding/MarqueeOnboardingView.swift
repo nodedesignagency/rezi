@@ -72,6 +72,15 @@ struct MarqueeOnboardingView: View {
         let vScale = size.height / Metrics.designHeight
         let outerRing = (Metrics.Marquee.ringSizes.last ?? Metrics.Marquee.iconSize) * scale
 
+        // The icon is placed by ratio down the screen. The rows keep their
+        // design spacing from it at the cards' own scale, so on a screen
+        // shorter than the design's shape they close up around the icon as
+        // one group instead of sliding into each other.
+        let iconY = Metrics.Marquee.iconCenterY * vScale
+        func rowTop(_ designTop: CGFloat) -> CGFloat {
+            iconY + (designTop - Metrics.Marquee.iconCenterY) * scale
+        }
+
         return ZStack(alignment: .top) {
             ForEach(Self.lanes.indices, id: \.self) { index in
                 let lane = Self.lanes[index]
@@ -86,7 +95,7 @@ struct MarqueeOnboardingView: View {
                     width: size.width,
                     appeared: appeared
                 )
-                .offset(y: lane.top * vScale)
+                .offset(y: rowTop(lane.top))
                 // Slides in the way it is about to run.
                 .entrance(
                     appeared,
@@ -97,7 +106,7 @@ struct MarqueeOnboardingView: View {
             }
 
             IconHalo(appeared: appeared, scale: scale)
-                .offset(y: Metrics.Marquee.iconCenterY * vScale - outerRing / 2)
+                .offset(y: iconY - outerRing / 2)
         }
         .frame(width: size.width, height: size.height, alignment: .top)
     }

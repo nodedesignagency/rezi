@@ -15,7 +15,7 @@ struct MarqueeCard: View {
 
     var body: some View {
         JobCardView(job: job, revealed: revealed)
-            .overlay { ApplyStamp(strength: applied ? 1 : 0) }
+            .overlay { ApplyStamp(strength: applied ? 1 : 0, cardScale: scale) }
             // The first screen's shadow: y 47.06, blur 50.88, #16192E at 5%.
             .shadow(
                 color: Color(hex: 0x16192E).opacity(Metrics.cardShadowOpacity),
@@ -41,6 +41,8 @@ struct MarqueeCard: View {
 struct ApplyStamp: View {
     /// 0 … 1.
     var strength: Double
+    /// How much the card this sits on is scaled down on screen.
+    var cardScale: CGFloat
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: Metrics.cardCornerRadius, style: .continuous)
@@ -53,7 +55,7 @@ struct ApplyStamp: View {
             shape
                 .strokeBorder(
                     ReziColor.swipeApply,
-                    lineWidth: Metrics.swipeBorderWidth / Metrics.Marquee.cardScale
+                    lineWidth: Metrics.swipeBorderWidth / max(cardScale, 0.01)
                 )
                 .opacity(strength)
 
