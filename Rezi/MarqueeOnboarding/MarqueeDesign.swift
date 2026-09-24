@@ -83,8 +83,10 @@ extension Metrics {
         /// a phone that has less of it to give.
         static let iconSpace: CGFloat = 192
 
-        /// The three rings around it, inside out. Each sits about 8 outside
-        /// the last.
+        /// The three rings around it in the design, inside out, each about 8
+        /// outside the last. The pulse keeps three in flight, so at any moment
+        /// the screen looks like this; with Reduce Motion on, it is exactly
+        /// this.
         static let ringSizes: [CGFloat] = [138, 153, 169]
         /// Measured off the render along each ring's diagonal.
         static let ringCornerRatio: CGFloat = 0.235
@@ -96,24 +98,13 @@ extension Metrics {
 
         // MARK: Pulse
 
-        /// A pulse is a faint ring leaving the icon and travelling out through
-        /// the other three, each lighting up as it passes. It grows from the
-        /// icon's edge to this, just past the outer ring, and has faded to
-        /// nothing by the time it gets there.
-        static let pulseMaxSize: CGFloat = 200
-        static let pulseLineWidth: CGFloat = 1.25
-        static let pulseOpacity: Double = 0.6
-
-        /// How close, in points, the travelling ring has to be to a ring to
-        /// light it: roughly the gap between two rings.
-        static let pulseReach: CGFloat = 9
-        /// A lit ring: how much it swells, and how much stronger its line and
-        /// its fill get. Small enough that neighbouring rings never touch.
-        static let pulseSwell: CGFloat = 0.045
-        static let pulseStrokeGain: Double = 0.45
-        static let pulseFillGain: Double = 0.10
-        /// How much the icon itself swells as each pulse leaves it.
-        static let pulseBeatScale: CGFloat = 0.03
+        /// Each ring is born at the icon's edge and grows to this, a little
+        /// past the design's outer ring, fading out as it goes.
+        static let pulseMaxSize: CGFloat = 186
+        /// A ring's line at its strongest, just after it leaves the icon. A
+        /// touch above the resting rings', since each is only at full strength
+        /// for a moment.
+        static let pulseStrokeOpacity: Double = 0.32
 
         // MARK: Tap to apply
 
@@ -138,9 +129,8 @@ extension Motion {
             static let rows: Double = 0.10
             static let rowStagger: Double = 0.07
             /// Once the icon has landed (`Motion.Beat.appIcon`), its rings
-            /// ripple out one after another.
+            /// open out around it.
             static let rings: Double = 0.66
-            static let ringStagger: Double = 0.08
         }
 
         /// How far a row slides as it arrives.
@@ -208,15 +198,13 @@ extension Motion {
 
         // MARK: Pulse
 
-        /// One pulse every this many seconds.
-        static let pulsePeriod: Double = 2.6
-        /// The part of each period the travelling ring is out; the rest is a
-        /// rest before the next one.
-        static let pulseTravel: Double = 0.75
-        /// The part of each period the icon's beat takes.
-        static let pulseBeatLength: Double = 0.12
-        /// The first pulse waits for the rings to finish arriving.
-        static let pulseStartDelay: Double = 1.2
+        /// Seconds from a ring leaving the icon to its fading away. The rings
+        /// are spread evenly through it, so a new one leaves every third of
+        /// this.
+        static let pulseLife: Double = 3.0
+        /// The part of a ring's life spent fading in. It is still mostly
+        /// behind the icon then, so it emerges rather than pops.
+        static let pulseFadeIn: Double = 0.15
     }
 }
 

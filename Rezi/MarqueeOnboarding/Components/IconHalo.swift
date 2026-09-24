@@ -1,144 +1,110 @@
 import Foundation
 import SwiftUI
 
-/// The Rezi mark at hero size, inside three rings, pulsing.
+/// The Rezi mark at hero size, pulsing.
 ///
 /// The icon is the first screen's `AppIconBadge`, with its own arrival, just
-/// larger. The rings ripple out after it lands. From then on, every couple of
-/// seconds the icon gives a small beat and a faint ring leaves it, travelling
-/// out through the other three; each lights up and swells as it passes, so the
-/// pulse reads as moving outward rather than everything flashing at once.
+/// larger. Its three rings are the pulse itself: each is born at the icon's
+/// edge, grows outward and fades away, then starts again. They are spread
+/// evenly through that cycle, so one is always leaving the icon as another
+/// fades, and at any moment there are three around it, as in the design,
+/// none of them standing still.
+///
+/// With Reduce Motion on, the design's three rings are shown at rest.
 struct IconHalo: View {
     var appeared: Bool
     /// Hero scale for the current screen.
     var scale: CGFloat
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    /// When the first pulse leaves, once the entrance has settled.
-    @State private var pulseStart: TimeInterval?
+    /// The pulse is measured from here.
+    @State private var startTime = Date.timeIntervalSinceReferenceDate
 
+    /// The layout box is the design's outer ring, which the page positions
+    /// by. Rings growing past it are drawn outside it.
     private var outerSize: CGFloat {
         (Metrics.Marquee.ringSizes.last ?? Metrics.Marquee.iconSize) * scale
     }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: nil, paused: reduceMotion)) { context in
-            let pulse = currentPulse(at: context.date.timeIntervalSinceReferenceDate)
+        ZStack {
+            TimelineView(.animation(minimumInterval: nil, paused: reduceMotion)) { context in
+                let elapsed = context.date.timeIntervalSinceReferenceDate - startTime
 
-            ZStack {
-                if let pulse {
-                    travellingRing(pulse)
+                ZStack {
+                    ForEach(Metrics.Marquee.ringSizes.indices, id: \.self) { index in
+                        ringView(reduceMotion ? Self.restingRing(index) : Self.pulsingRing(index, elapsed: elapsed))
+                    }
                 }
-
-                // Outermost first, so each ring's faint fill builds up
-                // toward the icon.
-                ForEach(Metrics.Marquee.ringSizes.indices.reversed(), id: \.self) { index in
-                    ring(index: index, pulse: pulse)
-                }
-
-                AppIconBadge(appeared: appeared, size: Metrics.Marquee.iconSize * scale)
-                    .scaleEffect(1 + Metrics.Marquee.pulseBeatScale * (pulse?.beat ?? 0))
             }
+            .entrance(appeared, delay: Motion.Marquee.Beat.rings, offsetY: 0, startScale: 0.82)
+
+            // Above the rings, so each is hidden behind the icon as it is born.
+            AppIconBadge(appeared: appeared, size: Metrics.Marquee.iconSize * scale)
         }
         .frame(width: outerSize, height: outerSize)
-        .onAppear(perform: schedulePulse)
-        .onChange(of: appeared) { schedulePulse() }
         .accessibilityHidden(true)
     }
 
     // MARK: - Rings
 
-    private func ring(index: Int, pulse: Pulse?) -> some View {
-        let designSize = Metrics.Marquee.ringSizes[index]
-        let size = designSize * scale
-        let lit = pulse?.light(at: designSize) ?? 0
+    /// One ring at one moment, in design points.
+    private struct Ring {
+        var size: CGFloat
+        var strokeOpacity: Double
+        var fillOpacity: Double
+    }
+
+    private func ringView(_ ring: Ring) -> some View {
+        let size = ring.size * scale
         let shape = RoundedRectangle(
             cornerRadius: size * Metrics.Marquee.ringCornerRatio,
             style: .continuous
         )
 
         return shape
-            .fill(Color.white.opacity(
-                Metrics.Marquee.ringFillOpacity + Metrics.Marquee.pulseFillGain * Double(lit)
-            ))
+            .fill(Color.white.opacity(ring.fillOpacity))
             .overlay {
                 shape.strokeBorder(
-                    ReziColor.Marquee.ring.opacity(
-                        Metrics.Marquee.ringStrokeOpacity + Metrics.Marquee.pulseStrokeGain * Double(lit)
-                    ),
+                    ReziColor.Marquee.ring.opacity(ring.strokeOpacity),
                     lineWidth: Metrics.Marquee.ringLineWidth
                 )
             }
             .frame(width: size, height: size)
-            .scaleEffect(1 + Metrics.Marquee.pulseSwell * lit)
-            .entrance(
-                appeared,
-                delay: Motion.Marquee.Beat.rings + Double(index) * Motion.Marquee.Beat.ringStagger,
-                offsetY: 0,
-                startScale: 0.82
-            )
     }
 
-    /// The faint ring on its way out from the icon.
-    private func travellingRing(_ pulse: Pulse) -> some View {
-        let size = pulse.size * scale
-
-        return RoundedRectangle(
-            cornerRadius: size * Metrics.Marquee.ringCornerRatio,
-            style: .continuous
+    /// The design's ring, standing still.
+    private static func restingRing(_ index: Int) -> Ring {
+        Ring(
+            size: Metrics.Marquee.ringSizes[index],
+            strokeOpacity: Metrics.Marquee.ringStrokeOpacity,
+            fillOpacity: Metrics.Marquee.ringFillOpacity
         )
-        .strokeBorder(ReziColor.Marquee.ring, lineWidth: Metrics.Marquee.pulseLineWidth)
-        .frame(width: size, height: size)
-        .opacity(pulse.opacity)
     }
 
-    // MARK: - Pulse
+    /// Where ring `index` is in its life, `elapsed` seconds in.
+    private static func pulsingRing(_ index: Int, elapsed: Double) -> Ring {
+        let count = Double(Metrics.Marquee.ringSizes.count)
+        let cycles = elapsed / Motion.Marquee.pulseLife + Double(index) / count
+        let wrapped = cycles.truncatingRemainder(dividingBy: 1)
+        let life = wrapped < 0 ? wrapped + 1 : wrapped
 
-    /// One moment of a pulse.
-    private struct Pulse {
-        /// Size of the travelling ring, in design points.
-        var size: CGFloat
-        /// Its opacity; zero while resting between pulses.
-        var opacity: Double
-        /// 0 … 1, the icon's beat as the ring leaves it.
-        var beat: CGFloat
-
-        /// 0 … 1: how lit a ring of `ringSize` is, which is how close the
-        /// travelling ring is to it, and fading as the pulse spreads out.
-        func light(at ringSize: CGFloat) -> CGFloat {
-            guard opacity > 0 else { return 0 }
-            let distance = (size - ringSize) / Metrics.Marquee.pulseReach
-            let closeness = CGFloat(exp(-Double(distance * distance)))
-            return closeness * CGFloat(opacity / Metrics.Marquee.pulseOpacity).squareRoot()
-        }
-    }
-
-    private func currentPulse(at time: TimeInterval) -> Pulse? {
-        guard !reduceMotion, let pulseStart, time >= pulseStart else { return nil }
-
-        let period = Motion.Marquee.pulsePeriod
-        let phase = (time - pulseStart).truncatingRemainder(dividingBy: period) / period
-
-        let beatLength = Motion.Marquee.pulseBeatLength
-        let beat = phase < beatLength ? CGFloat(sin(.pi * phase / beatLength)) : 0
-
-        let travel = Motion.Marquee.pulseTravel
-        guard phase < travel else {
-            return Pulse(size: 0, opacity: 0, beat: beat)
-        }
-
-        // Quick off the icon, slowing as it spreads, and fading as it goes.
-        let progress = phase / travel
-        let eased = 1 - pow(1 - progress, 2)
+        // Quick off the icon, easing as it spreads.
+        let travel = 1 - pow(1 - life, 1.3)
         let size = Metrics.Marquee.iconSize
-            + (Metrics.Marquee.pulseMaxSize - Metrics.Marquee.iconSize) * CGFloat(eased)
-        let opacity = Metrics.Marquee.pulseOpacity * pow(1 - progress, 1.4)
+            + (Metrics.Marquee.pulseMaxSize - Metrics.Marquee.iconSize) * CGFloat(travel)
 
-        return Pulse(size: size, opacity: opacity, beat: beat)
-    }
+        // Fades in while still mostly behind the icon, then out as it grows,
+        // reaching nothing just as it is reborn.
+        let fadeIn = Motion.Marquee.pulseFadeIn
+        let strength = life < fadeIn
+            ? life / fadeIn
+            : pow(1 - (life - fadeIn) / (1 - fadeIn), 1.2)
 
-    private func schedulePulse() {
-        guard appeared, pulseStart == nil else { return }
-        pulseStart = Date.timeIntervalSinceReferenceDate + Motion.Marquee.pulseStartDelay
+        return Ring(
+            size: size,
+            strokeOpacity: Metrics.Marquee.pulseStrokeOpacity * strength,
+            fillOpacity: Metrics.Marquee.ringFillOpacity * strength
+        )
     }
 }

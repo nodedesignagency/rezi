@@ -73,7 +73,7 @@ job-card company mark are still drawn rather than supplied.
 | **Tap a card** | The card rises under a green APPLY stamp, with a haptic. The row pauses so you can read it, then picks back up |
 | **Score gauges** | Each card's arc fills as it slides onto the screen |
 | **Ribbon** | Rectangle 65, drawn in code from the design's gradient, so its shape moves: it drifts, turns, stretches and swells, its S-bend (Figma's Warp, as a Metal shader) travels along it, and a finer ripple plays over the top |
-| **Icon pulse** | Every couple of seconds the icon beats and a faint ring travels out from it; each of the three rings lights up and swells as it passes |
+| **Icon pulse** | The three rings are the pulse: each is born at the icon's edge, grows outward and fades, then starts again, one leaving about every second. There are always three, as in the design, and none stands still |
 | **Button** | Same as the card stack, in this design's purple |
 
 Reduce Motion freezes the rows, the ribbon and the pulse. The rows can still
