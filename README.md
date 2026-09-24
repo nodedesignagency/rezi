@@ -72,11 +72,11 @@ job-card company mark are still drawn rather than supplied.
 | **Drag a row** | Grab any row and scrub it. Let go and it coasts with your throw, then eases back into its own pace |
 | **Tap a card** | The card rises under a green APPLY stamp, with a haptic. The row pauses so you can read it, then picks back up |
 | **Score gauges** | Each card's arc fills as it slides onto the screen |
-| **Ribbon** | Rectangle 65 sways and turns slowly, and Figma's sine-wave Warp runs live as a Metal shader so its edges keep rippling |
-| **Icon rings** | Breathe outward, inner ring first |
+| **Ribbon** | Rectangle 65, drawn in code from the design's gradient, so its shape moves: it drifts, turns, stretches and swells, its S-bend (Figma's Warp, as a Metal shader) travels along it, and a finer ripple plays over the top |
+| **Icon pulse** | Every couple of seconds the icon beats and a faint ring travels out from it; each of the three rings lights up and swells as it passes |
 | **Button** | Same as the card stack, in this design's purple |
 
-Reduce Motion freezes the rows, the ribbon and the rings. The rows can still
+Reduce Motion freezes the rows, the ribbon and the pulse. The rows can still
 be dragged.
 
 ## What's animated — Card stack
@@ -116,7 +116,7 @@ Rezi/
 │   ├── MarqueeDesign.swift     its sizes, timings and colours, in one place
 │   ├── MarqueeTrack.swift      row motion: cruise, drag, fling, catch
 │   ├── MarqueeFeed.swift       the cards in each row
-│   ├── Components/             ribbon, rows, cards, icon rings
+│   ├── Components/             ribbon, rows, cards, icon and its pulse
 │   └── Shaders/SineWarp.metal  Figma's Warp effect, live
 └── Assets.xcassets/            filled in by scripts/import-assets.sh
 ```

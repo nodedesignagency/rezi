@@ -25,7 +25,6 @@ as below. The `@2x` / `@3x` suffix is what the script reads, so keep it.
 | `rezi-icon` | 80 × 80 | The purple app icon with the white **R** | ✅ @2x |
 | `onboarding-background` | 400 × 690 | The blue → purple sky gradient | ➖ drawn |
 | `company-logo` | 36 × 36 | Round company mark on the job cards | ➖ drawn |
-| `marquee-gradient` | 1370 × 842 | Rectangle 65: the purple ribbon behind the marquee screen, **exported with its 55% opacity** | ✅ @1x |
 
 So `phone-mockup@3x.png` would be 900 × 1827 px, and so on.
 
@@ -39,10 +38,12 @@ The marquee screen shows `rezi-icon` at 127 pt rather than 80, so the 160 px
 export in the repo is soft there. **Re-export it at 384 × 384 or larger**
 (`rezi-icon@3x.png`) and it will be sharp on both screens.
 
-`marquee-gradient` is a soft gradient, so @1x holds up even on a 3x screen.
-Swap in a new export at the same size and the screen picks it up. The
-screen's shader adds the ripple on top, so export it without Figma's Warp
-effect if you want the motion to be the only warp.
+The marquee screen's purple ribbon (Rectangle 65) needs no export: it is
+drawn in code from the design's own gradient values, so it can change shape as
+it moves. `assets/reference/rectangle-65.png` is the Figma export it was
+matched against, kept only for comparison. If the gradient changes in Figma,
+the numbers to update are the `ribbon…` values in
+`Rezi/MarqueeOnboarding/MarqueeDesign.swift`.
 
 ### Vector icons
 

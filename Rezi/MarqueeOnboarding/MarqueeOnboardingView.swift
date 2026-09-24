@@ -110,6 +110,11 @@ struct MarqueeOnboardingView: View {
         let iconY = spaceTop + space / 2
 
         return ZStack(alignment: .top) {
+            // Beneath the rows, so a pulse spreading past the outer ring
+            // passes under the cards rather than over them.
+            IconHalo(appeared: appeared, scale: iconScale)
+                .offset(y: iconY - outerRing / 2)
+
             ForEach(Self.lanes.indices, id: \.self) { index in
                 let lane = Self.lanes[index]
 
@@ -132,9 +137,6 @@ struct MarqueeOnboardingView: View {
                     offsetX: -lane.direction.sign * Motion.Marquee.rowEntranceTravel
                 )
             }
-
-            IconHalo(appeared: appeared, scale: iconScale)
-                .offset(y: iconY - outerRing / 2)
         }
         .frame(width: size.width, height: size.height, alignment: .top)
     }

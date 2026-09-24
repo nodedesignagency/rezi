@@ -10,21 +10,35 @@ import SwiftUI
 extension Metrics {
     enum Marquee {
 
-        // MARK: Gradient
+        // MARK: Ribbon
 
-        /// Rectangle 65: 1370 × 842 at x -582, y -362 in the 393 × 852 frame.
-        /// The export already carries the layer's 55% opacity, so it is drawn
-        /// at full strength.
-        static let gradientSize = CGSize(width: 1370, height: 842)
-        static let gradientOrigin = CGPoint(x: -582, y: -362)
+        // Rectangle 65, drawn in code rather than from its export. In Figma it
+        // is a radial fill, #CC97F4 → #722BFF at 35% → white, on a layer at 55%
+        // with a sine-wave Warp. The geometry below was fitted to that export
+        // and reproduces it to within about 2% per pixel. All of it is in the
+        // 393 × 852 frame's points.
 
-        /// The bottom of the export dissolves over this fraction of its height,
-        /// so drift can never lift its hard lower edge into view.
-        static let gradientFade: CGFloat = 0.10
+        /// Centre of the ellipse.
+        static let ribbonCenter = CGPoint(x: 102.6, y: 58.4)
+        /// Its semi-axes, out to the white stop: very long, and thin, which is
+        /// what makes it read as a ribbon rather than a glow.
+        static let ribbonRadii = CGSize(width: 1602, height: 308)
+        /// Rising to the right.
+        static let ribbonAngle: Double = -28.9
+        static let ribbonCoreStop: CGFloat = 0.35
 
-        /// Extra depth, below the export's own bottom edge, that the warp is
-        /// rendered over. Covers the drift and the turn.
-        static let gradientOverreach: CGFloat = 64
+        /// Figma's Warp, as fitted: the ribbon is bent up and down by 25 along
+        /// a wave 1108 long, which gives it its slight S. The phase is measured
+        /// from the frame's left edge.
+        static let ribbonBend: CGFloat = 25.2
+        static let ribbonBendWavelength: CGFloat = 1108
+        static let ribbonBendPhase: Double = 5.703
+
+        /// How far down the page the ribbon is drawn. It has faded to white
+        /// well before this, in every pose it drifts through.
+        static let ribbonReach: CGFloat = 544
+        /// The bottom of that band dissolves, in case it has not quite.
+        static let ribbonFade: CGFloat = 0.15
 
         // MARK: Rows
 
@@ -78,9 +92,28 @@ extension Metrics {
         /// Each ring also lifts the sky inside it slightly, so the stack reads
         /// as layered glass rather than three outlines.
         static let ringFillOpacity: Double = 0.05
-        /// How much larger a ring gets at the top of its breath. Small enough
-        /// that neighbouring rings never touch.
-        static let ringSwell: CGFloat = 0.035
+        static let ringStrokeOpacity: Double = 0.2
+
+        // MARK: Pulse
+
+        /// A pulse is a faint ring leaving the icon and travelling out through
+        /// the other three, each lighting up as it passes. It grows from the
+        /// icon's edge to this, just past the outer ring, and has faded to
+        /// nothing by the time it gets there.
+        static let pulseMaxSize: CGFloat = 200
+        static let pulseLineWidth: CGFloat = 1.25
+        static let pulseOpacity: Double = 0.6
+
+        /// How close, in points, the travelling ring has to be to a ring to
+        /// light it: roughly the gap between two rings.
+        static let pulseReach: CGFloat = 9
+        /// A lit ring: how much it swells, and how much stronger its line and
+        /// its fill get. Small enough that neighbouring rings never touch.
+        static let pulseSwell: CGFloat = 0.045
+        static let pulseStrokeGain: Double = 0.45
+        static let pulseFillGain: Double = 0.10
+        /// How much the icon itself swells as each pulse leaves it.
+        static let pulseBeatScale: CGFloat = 0.03
 
         // MARK: Tap to apply
 
@@ -135,35 +168,55 @@ extension Motion {
         /// How long the stamp holds before the card settles back into the row.
         static let applyHold: TimeInterval = 0.9
 
-        // MARK: Gradient
+        // MARK: Ribbon
 
-        /// The export sways and turns about its own centre. Every period is
-        /// different, so it never repeats a pose, and all three start at zero
-        /// so the first frame is the Figma composition.
+        // Because the ribbon is drawn rather than supplied, its shape itself
+        // can move, not just its position. Every motion is a sine from zero,
+        // so the first frame is the Figma composition, and no two share a
+        // period, so it never repeats a pose.
+
+        /// The centre wanders.
         static let driftX: CGFloat = 34
         static let driftY: CGFloat = 18
-        static let driftAngle: Double = 6
         static let driftSpeedX: Double = 0.38
         static let driftSpeedY: Double = 0.29
+        /// It turns either side of its angle.
+        static let driftAngle: Double = 5
         static let driftSpeedAngle: Double = 0.21
+        /// It lengthens and shortens, and thickens and thins, as a fraction
+        /// of its size.
+        static let stretch: CGFloat = 0.06
+        static let stretchSpeed: Double = 0.23
+        static let swell: CGFloat = 0.10
+        static let swellSpeed: Double = 0.41
+        /// Its lighter core grows and shrinks inside the purple band.
+        static let coreShift: CGFloat = 0.05
+        static let coreSpeed: Double = 0.37
 
-        /// Figma's Warp effect (sine wave, amplitude 5.2, scale 0.5), run live.
-        /// In points here rather than Figma's units, and tuned by eye against
-        /// the export.
-        static let warpAmplitude: CGFloat = 22
-        static let warpWavelength: CGFloat = 460
-        static let warpSpeedX: Double = 0.8
-        static let warpSpeedY: Double = 0.62
+        /// The S-bend travels along it like a slow wave down a flag, radians
+        /// per second: about twenty seconds for a full pass.
+        static let bendSpeed: Double = 0.3
+
+        /// A finer ripple on top, in points.
+        static let rippleAmplitude: CGFloat = 12
+        static let rippleWavelength: CGFloat = 460
+        static let rippleSpeedX: Double = 0.8
+        static let rippleSpeedY: Double = 0.62
         /// The ripple builds up over this long rather than starting at full
-        /// strength, so the opening frame is still the export as supplied.
-        static let warpWake: Double = 2.5
+        /// strength, so the opening frame is the design.
+        static let rippleWake: Double = 2.5
 
-        // MARK: Rings
+        // MARK: Pulse
 
-        /// One breath every three and a half seconds, passing outward: each
-        /// ring peaks a moment after the one inside it.
-        static let ringBreathSpeed: Double = 1.8
-        static let ringBreathLag: Double = 0.7
+        /// One pulse every this many seconds.
+        static let pulsePeriod: Double = 2.6
+        /// The part of each period the travelling ring is out; the rest is a
+        /// rest before the next one.
+        static let pulseTravel: Double = 0.75
+        /// The part of each period the icon's beat takes.
+        static let pulseBeatLength: Double = 0.12
+        /// The first pulse waits for the rings to finish arriving.
+        static let pulseStartDelay: Double = 1.2
     }
 }
 
@@ -174,17 +227,13 @@ extension ReziColor {
         static let accent = Color(hex: 0x621E97)
         static let accentPressed = Color(hex: 0x521880)
 
-        /// Hairline around each of the icon's rings.
-        static let ring = Color(hex: 0x621E97).opacity(0.2)
+        /// The icon's rings and its pulse, at the opacities in `Metrics.Marquee`.
+        static let ring = Color(hex: 0x621E97)
 
-        /// Rectangle 65's radial stops. Only used to draw the gradient when the
-        /// export is missing; the last stop is white.
-        static let gradientCenter = Color(hex: 0xCC97F4)
-        static let gradientMid = Color(hex: 0x722BFF)
-        static let gradientOpacity: Double = 0.55
+        /// Rectangle 65's radial stops, as set in Figma. The last is white.
+        static let ribbonCore = Color(hex: 0xCC97F4)
+        static let ribbonBand = Color(hex: 0x722BFF)
+        /// The layer's opacity in Figma.
+        static let ribbonOpacity: Double = 0.55
     }
-}
-
-extension Artwork.Name {
-    static let marqueeGradient = "MarqueeGradient"
 }
