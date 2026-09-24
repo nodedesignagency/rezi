@@ -15,33 +15,60 @@ import SwiftUI
 /// that. It overhangs the screen by the warp's reach on every side, so any edge
 /// the shader pulls inward is one nobody can see.
 ///
-/// Reduce Motion holds the Figma pose.
+/// It arrives the same way it moves, from its own values each frame: fading
+/// in and filling out to its full thickness. Never with a view animation. A
+/// scale or offset animating on the layer that holds the shader makes iOS
+/// draw the shader over the wrong region until it settles, which showed as a
+/// hard edge across the ribbon and a bite out of its top on launch.
+///
+/// Reduce Motion holds the Figma pose, and fades it in.
 struct FlowingGradient: View {
     var appeared: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// Motion is measured from here, so everything starts from the Figma pose.
     @State private var startTime = Date.timeIntervalSinceReferenceDate
+    /// When the ribbon begins to arrive, once the screen has appeared.
+    @State private var arrivalStart: TimeInterval?
 
     var body: some View {
         GeometryReader { geo in
             TimelineView(.animation(minimumInterval: nil, paused: reduceMotion)) { context in
-                let elapsed = reduceMotion
-                    ? 0
-                    : max(0, context.date.timeIntervalSinceReferenceDate - startTime)
+                let now = context.date.timeIntervalSinceReferenceDate
+                let elapsed = reduceMotion ? 0 : max(0, now - startTime)
+                let arrival = reduceMotion ? 1 : arrivalProgress(at: now)
 
-                ribbon(in: geo.size, elapsed: elapsed)
+                ribbon(in: geo.size, elapsed: elapsed, arrival: arrival)
             }
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
         .accessibilityHidden(true)
-        .entrance(appeared, delay: Motion.Marquee.Beat.gradient, offsetY: 0, startScale: 1.04)
+        // Reduce Motion's plain cross-fade. Otherwise always visible here: the
+        // arrival is drawn inside the ribbon instead, for the reason above.
+        .entrance(appeared || !reduceMotion, delay: Motion.Marquee.Beat.gradient, offsetY: 0)
+        .onAppear(perform: beginArrival)
+        .onChange(of: appeared) { beginArrival() }
+    }
+
+    // MARK: - Arrival
+
+    private func beginArrival() {
+        guard appeared, arrivalStart == nil else { return }
+        arrivalStart = Date.timeIntervalSinceReferenceDate + Motion.Marquee.Beat.gradient
+    }
+
+    /// 0 before the screen has appeared, easing out to 1.
+    private func arrivalProgress(at time: TimeInterval) -> CGFloat {
+        guard let arrivalStart else { return 0 }
+        let progress = min(1, max(0, (time - arrivalStart) / Motion.Marquee.ribbonArrival))
+        return CGFloat(1 - pow(1 - progress, 3))
     }
 
     // MARK: - Ribbon
 
-    private func ribbon(in size: CGSize, elapsed: Double) -> some View {
+    /// - Parameter arrival: 0 … 1, how far the ribbon has arrived.
+    private func ribbon(in size: CGSize, elapsed: Double, arrival: CGFloat) -> some View {
         let scale = size.width / Metrics.designWidth
 
         /// A sine of the clock at `speed`, starting from zero.
@@ -58,8 +85,10 @@ struct FlowingGradient: View {
             + Motion.Marquee.driftAngle * Double(sway(Motion.Marquee.driftSpeedAngle))
         let length = Metrics.Marquee.ribbonRadii.width * scale
             * (1 + Motion.Marquee.stretch * sway(Motion.Marquee.stretchSpeed))
+        let bloom = 1 - Motion.Marquee.ribbonArrivalBloom * (1 - arrival)
         let thickness = Metrics.Marquee.ribbonRadii.height * scale
             * (1 + Motion.Marquee.swell * sway(Motion.Marquee.swellSpeed))
+            * bloom
         let core = Metrics.Marquee.ribbonCoreStop
             + Motion.Marquee.coreShift * sway(Motion.Marquee.coreSpeed)
 
@@ -92,7 +121,7 @@ struct FlowingGradient: View {
         .rotationEffect(.degrees(angle))
         .position(x: center.x + margin, y: center.y + margin)
         .frame(width: size.width + margin * 2, height: reach + margin * 2)
-        .opacity(ReziColor.Marquee.ribbonOpacity)
+        .opacity(ReziColor.Marquee.ribbonOpacity * Double(arrival))
         .mask { bottomFade }
         .clipped()
         .distortionEffect(

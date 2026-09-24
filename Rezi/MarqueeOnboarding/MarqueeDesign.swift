@@ -187,6 +187,11 @@ extension Motion {
         /// per second: about twenty seconds for a full pass.
         static let bendSpeed: Double = 0.3
 
+        /// Seconds the ribbon takes to arrive: fading in, and filling out from
+        /// this much thinner than it rests at.
+        static let ribbonArrival: Double = 0.9
+        static let ribbonArrivalBloom: CGFloat = 0.15
+
         /// A finer ripple on top, in points.
         static let rippleAmplitude: CGFloat = 12
         static let rippleWavelength: CGFloat = 460
