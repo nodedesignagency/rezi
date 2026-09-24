@@ -33,9 +33,23 @@ extension Metrics {
         static let cardScale: CGFloat = 50.0 / 76.0
         static let cardGap: CGFloat = 8
 
-        /// Top of each row in the frame: the pair above the icon, then the pair
-        /// below it.
-        static let rowTops: [CGFloat] = [82, 140, 382, 440]
+        /// Top of the first row in the frame. Each row sits one card and one
+        /// gap below the one above it in its pair.
+        static let firstRowTop: CGFloat = 82
+
+        /// Figma: 26 between the bottom row and the headline. The lower pair is
+        /// placed from the headline rather than from the top of the screen, so
+        /// this holds on every phone; the copy sets taller on a device than in
+        /// Figma, and placing those rows by ratio let the headline ride up
+        /// into them.
+        static let rowsToHeadline: CGFloat = 26
+        /// Figma's text box starts at the capitals; SwiftUI's starts at the top
+        /// of the line, about 8 above them at 32 pt in SF Pro and Inter alike.
+        /// The 26 is kept to the capitals, which is the gap the eye reads.
+        static let headlineCapInset: CGFloat = 8
+        /// Where the copy starts before it has been measured, for the very
+        /// first layout pass. Nothing is visible yet at that point.
+        static let copyTopFallback: CGFloat = 508
 
         /// Leading edge of each row's first card before anything moves, so the
         /// opening frame lines up with the design.
@@ -50,8 +64,10 @@ extension Metrics {
 
         /// The same mark as the first screen's, at 127 rather than 80.
         static let iconSize: CGFloat = 127
-        /// Centre of the icon, from the top of the frame.
-        static let iconCenterY: CGFloat = 286
+        /// The space between the two pairs of rows in the frame, 190 to 382.
+        /// The icon and its rings sit centred in it, and scale down with it on
+        /// a phone that has less of it to give.
+        static let iconSpace: CGFloat = 192
 
         /// The three rings around it, inside out. Each sits about 8 outside
         /// the last.
